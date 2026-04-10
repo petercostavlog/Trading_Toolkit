@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES Futures Clock</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#090c10;color:#c0d4e8;font-family:'Courier New',monospace;padding:16px;max-width:420px;margin:0 auto;min-height:100vh}
+h1{color:#00e87a;font-size:16px;letter-spacing:4px;text-align:center;margin-bottom:4px;padding-top:12px}
+.sub{color:#4a6a7a;font-size:10px;letter-spacing:2px;text-align:center;margin-bottom:20px}
+.clocks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.clock-card{background:#0e1520;border:1px solid #1c2a3a;border-radius:10px;padding:14px;text-align:center}
+.tz-label{font-size:11px;color:#4a6a7a;letter-spacing:2px;margin-bottom:6px}
+.time{font-size:26px;font-weight:bold;color:#e0eaf5;letter-spacing:2px}
+.date{font-size:11px;color:#4a6a7a;margin-top:4px}
+.status-bar{border-radius:8px;padding:10px 14px;margin-bottom:14px;text-align:center;font-size:13px;font-weight:bold;letter-spacing:1px;transition:background 0.5s}
+.status-open{background:#002a1a;color:#00e87a;border:1px solid #00e87a33}
+.status-pit{background:#003322;color:#00ff99;border:1px solid #00ff9933}
+.status-overnight{background:#1a1a00;color:#ffd700;border:1px solid #ffd70033}
+.status-closed{background:#1a0a0a;color:#ff4455;border:1px solid #ff445533}
+.table-card{background:#0e1520;border:1px solid #1c2a3a;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.table-header{padding:10px 14px;border-bottom:1px solid #1c2a3a;font-size:11px;color:#4a6a7a;letter-spacing:2px}
+table{width:100%;border-collapse:collapse}
+th{padding:8px 12px;font-size:10px;color:#4a6a7a;letter-spacing:1px;text-align:left;border-bottom:1px solid #1c2a3a;font-weight:normal}
+td{padding:10px 12px;font-size:13px;border-bottom:1px solid #0d1828}
+td:first-child{color:#c0d4e8;font-weight:bold}
+td:not(:first-child){color:#8aabb0}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;letter-spacing:1px}
+.badge-open{background:#002a1a;color:#00e87a;border:1px solid #00e87a44}
+.badge-closed{background:#1a1a1a;color:#4a6a7a;border:1px solid #2a3a4a}
+.badge-now{background:#003322;color:#00ff99;border:1px solid #00ff9944}
+.badge-warn{background:#1a1200;color:#ffd700;border:1px solid #ffd70044}
+.note{text-align:center;font-size:11px;color:#3a5a6a;margin-top:10px;padding-bottom:16px}
+</style>
+</head>
+<body>
+
+<h1>ES FUTURES CLOCK</h1>
+<div class="sub">CME · CHICAGO · LONDON</div>
+
+<div class="clocks">
+  <div class="clock-card">
+    <div class="tz-label">LONDON BST</div>
+    <div class="time" id="lon">--:--:--</div>
+    <div class="date" id="lon-date"></div>
+  </div>
+  <div class="clock-card">
+    <div class="tz-label">CHICAGO CT</div>
+    <div class="time" id="chi">--:--:--</div>
+    <div class="date" id="chi-date"></div>
+  </div>
+</div>
+
+<div class="status-bar status-closed" id="status">LOADING...</div>
+
+<div class="table-card">
+  <div class="table-header">SESSION TIMES</div>
+  <table>
+    <tr>
+      <th>Session</th>
+      <th>London BST</th>
+      <th>Chicago CT</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>ETH opens</td>
+      <td>23:00</td>
+      <td>17:00</td>
+      <td id="s1"><span class="badge badge-closed">--</span></td>
+    </tr>
+    <tr>
+      <td>Pit opens</td>
+      <td>14:30</td>
+      <td>08:30</td>
+      <td id="s2"><span class="badge badge-closed">--</span></td>
+    </tr>
+    <tr>
+      <td>Pit closes</td>
+      <td>21:00</td>
+      <td>15:00</td>
+      <td id="s3"><span class="badge badge-closed">--</span></td>
+    </tr>
+    <tr>
+      <td>ETH closes</td>
+      <td>22:00</td>
+      <td>16:00</td>
+      <td id="s4"><span class="badge badge-closed">--</span></td>
+    </tr>
+  </table>
+</div>
+
+<div class="note">CME closes 16:00 CT daily &mdash; reopens 17:00 CT &mdash; 1 hour break only</div>
+
+<script>
+function fmt(d,tz){return d.toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+function fmtDate(d,tz){return d.toLocaleDateString('en-GB',{timeZone:tz,weekday:'short',day:'numeric',month:'short'})}
+function toMins(d,tz){const s=d.toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false});const[h,m]=s.split(':').map(Number);return h*60+m}
+function badge(text,type){return`<span class="badge badge-${type}">${text}</span>`}
+
+function tick(){
+  const now=new Date();
+  document.getElementById('lon').textContent=fmt(now,'Europe/London');
+  document.getElementById('chi').textContent=fmt(now,'America/Chicago');
+  document.getElementById('lon-date').textContent=fmtDate(now,'Europe/London');
+  document.getElementById('chi-date').textContent=fmtDate(now,'America/Chicago');
+
+  const ct=toMins(now,'America/Chicago');
+  const dow=now.toLocaleDateString('en-US',{timeZone:'America/Chicago',weekday:'short'});
+  const isSat=dow==='Sat';
+  const isSun=dow==='Sun';
+
+  const ETH_OPEN=17*60;
+  const PIT_OPEN=8*60+30;
+  const PIT_CLOSE=15*60;
+  const ETH_CLOSE=16*60;
+
+  let inETH=false,inPit=false,isClosed=false;
+
+  if(isSat){
+    isClosed=true;
+  } else if(isSun){
+    inETH=ct>=ETH_OPEN;
+    isClosed=!inETH;
+  } else {
+    isClosed=(ct>=ETH_CLOSE && ct<ETH_OPEN);
+    inETH=!isClosed;
+    inPit=inETH && ct>=PIT_OPEN && ct<PIT_CLOSE;
+  }
+
+  const bar=document.getElementById('status');
+  bar.className='status-bar';
+  let msg='';
+  if(isClosed){
+    bar.classList.add('status-closed');
+    if(isSat) msg='CME CLOSED — SATURDAY';
+    else {
+      const minsUntil=ct<ETH_OPEN?(ETH_OPEN-ct):(24*60-ct+ETH_OPEN);
+      const h=Math.floor(minsUntil/60),m=minsUntil%60;
+      msg=`CME CLOSED — opens in ${h}h ${m}m`;
+    }
+  } else if(inPit){
+    bar.classList.add('status-pit');
+    const minsLeft=PIT_CLOSE-ct;
+    const h=Math.floor(minsLeft/60),m=minsLeft%60;
+    msg=`PIT SESSION OPEN — ${h}h ${m}m remaining`;
+  } else if(inETH){
+    bar.classList.add('status-overnight');
+    if(ct<PIT_OPEN){
+      const minsLeft=PIT_OPEN-ct;
+      const h=Math.floor(minsLeft/60),m=minsLeft%60;
+      msg=`OVERNIGHT SESSION — pit opens in ${h}h ${m}m`;
+    } else {
+      const minsLeft=ETH_CLOSE-ct;
+      msg=`AFTER HOURS — closes in ${minsLeft}m`;
+    }
+  }
+  bar.textContent=msg;
+
+  document.getElementById('s1').innerHTML=badge(inETH?'open':'closed',inETH?'open':'closed');
+  document.getElementById('s2').innerHTML=badge(inPit?'open now':ct>=PIT_OPEN&&ct<ETH_CLOSE?'closed':'upcoming',inPit?'now':'closed');
+  document.getElementById('s3').innerHTML=badge(inPit?'not yet':ct>=PIT_CLOSE?'passed':'upcoming','closed');
+  document.getElementById('s4').innerHTML=badge(inETH?'open':'closed',inETH?'warn':'closed');
+}
+
+tick();
+setInterval(tick,1000);
+</script>
+</body>
+</html>

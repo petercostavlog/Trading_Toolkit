@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Position Size Calculator — Trading Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0b0f;
+    --bg-secondary: #12131a;
+    --bg-card: #181922;
+    --bg-card-hover: #1e2030;
+    --bg-input: #0e0f15;
+    --border: #252738;
+    --border-hover: #3a3d56;
+    --border-focus: #BEA064;
+    --text-primary: #e8e9f0;
+    --text-secondary: #8b8fa4;
+    --text-muted: #555874;
+    --accent-gold: #BEA064;
+    --accent-gold-dim: rgba(190, 160, 100, 0.15);
+    --accent-gold-glow: rgba(190, 160, 100, 0.25);
+    --accent-green: #3dd68c;
+    --accent-green-dim: rgba(61, 214, 140, 0.12);
+    --accent-red: #f25f5c;
+    --accent-red-dim: rgba(242, 95, 92, 0.12);
+    --accent-blue: #5c9cf2;
+    --accent-blue-dim: rgba(92, 156, 242, 0.12);
+    --radius: 14px;
+    --radius-sm: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  body::before {
+    content: '';
+    position: fixed; top: -30%; left: -10%;
+    width: 70vw; height: 70vh;
+    background: radial-gradient(ellipse, rgba(190,160,100,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .app {
+    width: 100%; max-width: 520px;
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 32px;
+  }
+  .header-icon {
+    width: 48px; height: 48px; border-radius: var(--radius-sm);
+    background: var(--accent-gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .header h1 {
+    font-size: 24px; font-weight: 800; letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--text-muted); margin-top: 2px;
+  }
+
+  /* ── PRESET TABS ── */
+  .presets {
+    display: flex; gap: 8px; margin-bottom: 24px;
+  }
+  .preset-btn {
+    flex: 1; padding: 10px 8px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); cursor: pointer;
+    text-align: center; transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+  }
+  .preset-btn .label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    display: block;
+  }
+  .preset-btn .detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted); margin-top: 2px;
+    display: block;
+  }
+  .preset-btn:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+  .preset-btn.active {
+    border-color: var(--accent-gold); background: var(--accent-gold-dim);
+  }
+  .preset-btn.active .label { color: var(--accent-gold); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent-gold), transparent);
+    opacity: 0.5;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  /* ── FORM FIELDS ── */
+  .field {
+    margin-bottom: 18px;
+  }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; font-weight: 500; color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .field label .hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted); font-weight: 400;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap .prefix, .input-wrap .suffix {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text-muted);
+    pointer-events: none;
+  }
+  .input-wrap .prefix { left: 14px; }
+  .input-wrap .suffix { right: 14px; }
+  input[type="number"] {
+    width: 100%; background: var(--bg-input);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--text-primary); font-family: 'JetBrains Mono', monospace;
+    font-size: 16px; font-weight: 500;
+    outline: none; transition: all 0.2s;
+    -moz-appearance: textfield;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-gold-glow); }
+  .has-prefix input { padding-left: 32px; }
+  .has-suffix input { padding-right: 52px; }
+
+  /* ── SLIDER ── */
+  .slider-row {
+    display: flex; align-items: center; gap: 12px; margin-top: 6px;
+  }
+  input[type="range"] {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; background: var(--border); border-radius: 4px; outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    background: var(--accent-gold); border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 8px var(--accent-gold-glow);
+  }
+  .slider-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600; color: var(--accent-gold);
+    min-width: 48px; text-align: right;
+  }
+
+  /* ── RESULTS ── */
+  .results {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+    position: relative; overflow: hidden;
+  }
+  .results::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent-green), transparent);
+  }
+  .result-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .result-item {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .result-item.highlight {
+    border-color: var(--accent-gold);
+    background: var(--accent-gold-dim);
+  }
+  .result-item .result-label {
+    font-size: 11px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .result-item .result-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px; font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .result-item.highlight .result-value { color: var(--accent-gold); }
+  .result-item .result-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted); margin-top: 4px;
+  }
+
+  .full-width { grid-column: 1 / -1; }
+
+  /* ── RISK METER ── */
+  .risk-meter {
+    margin-top: 16px; padding: 16px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .risk-meter .meter-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;
+  }
+  .meter-bar {
+    height: 8px; background: var(--border); border-radius: 4px;
+    overflow: hidden; position: relative;
+  }
+  .meter-fill {
+    height: 100%; border-radius: 4px; transition: all 0.4s ease;
+  }
+
+  /* ── RULES PANEL ── */
+  .rules {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px; position: relative; overflow: hidden;
+  }
+  .rules::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent-blue), transparent);
+  }
+  .rules-title {
+    font-size: 13px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+  .rule-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .rule-row:last-child { border-bottom: none; }
+  .rule-name { font-size: 13px; color: var(--text-secondary); }
+  .rule-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+  }
+  .rule-ok { color: var(--accent-green); }
+  .rule-warn { color: var(--accent-gold); }
+  .rule-fail { color: var(--accent-red); }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 24px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent-gold); }
+
+  @media (max-width: 500px) {
+    .result-grid { grid-template-columns: 1fr; }
+    .presets { flex-wrap: wrap; }
+    .preset-btn { min-width: calc(50% - 4px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <a href="trading-toolkit-dashboard.html" class="back-link">← Back to Toolkit</a>
+
+  <div class="header">
+    <div class="header-icon">🧮</div>
+    <div>
+      <h1>Position Sizer</h1>
+      <p>MES / ES · Tick-based · Prop-firm aware</p>
+    </div>
+  </div>
+
+  <!-- PRESETS -->
+  <div class="presets">
+    <button class="preset-btn active" onclick="setPreset('apteros', this)">
+      <span class="label">Apteros 100K</span>
+      <span class="detail">$3K DD · $6K target</span>
+    </button>
+    <button class="preset-btn" onclick="setPreset('apex', this)">
+      <span class="label">Apex 100K</span>
+      <span class="detail">$3K DD · $6K target</span>
+    </button>
+    <button class="preset-btn" onclick="setPreset('live', this)">
+      <span class="label">Live Acct</span>
+      <span class="detail">Custom</span>
+    </button>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="card">
+    <div class="card-title">Account & Risk</div>
+
+    <div class="field">
+      <label>Account Balance <span class="hint">USD</span></label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">$</span>
+        <input type="number" id="balance" value="100000" oninput="calc()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Risk Per Trade</label>
+      <div class="slider-row">
+        <input type="range" id="riskSlider" min="0.1" max="3" step="0.1" value="0.5" oninput="syncRisk()">
+        <span class="slider-val" id="riskDisplay">0.5%</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Stop Distance <span class="hint">ticks</span></label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="stopTicks" value="8" min="1" oninput="calc()">
+        <span class="suffix">ticks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results">
+    <div class="result-grid">
+      <div class="result-item highlight">
+        <div class="result-label">MES Contracts</div>
+        <div class="result-value" id="mesContracts">—</div>
+        <div class="result-sub" id="mesRisk"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">ES Contracts</div>
+        <div class="result-value" id="esContracts">—</div>
+        <div class="result-sub" id="esRisk"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">$ Risk</div>
+        <div class="result-value" id="dollarRisk">—</div>
+        <div class="result-sub">max per trade</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">$ per Tick</div>
+        <div class="result-value" id="perTick">—</div>
+        <div class="result-sub" id="perTickSub">MES @ $1.25</div>
+      </div>
+    </div>
+
+    <div class="risk-meter">
+      <div class="meter-label">
+        <span>Drawdown Used</span>
+        <span id="ddPercent">0%</span>
+      </div>
+      <div class="meter-bar">
+        <div class="meter-fill" id="ddFill" style="width:0%; background: var(--accent-green);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RULES -->
+  <div class="rules">
+    <div class="rules-title" id="rulesTitle">Apteros 100K Rules</div>
+    <div id="rulesBody"></div>
+  </div>
+</div>
+
+<script>
+  const PRESETS = {
+    apteros: {
+      name: 'Apteros 100K',
+      balance: 100000,
+      maxDrawdown: 3000,
+      profitTarget: 6000,
+      maxContracts: 14,      // MES equivalent
+      maxDailyLoss: 1000,
+      trailingDD: true,
+    },
+    apex: {
+      name: 'Apex 100K',
+      balance: 100000,
+      maxDrawdown: 3000,
+      profitTarget: 6000,
+      maxContracts: 14,
+      maxDailyLoss: null,
+      trailingDD: false,
+    },
+    live: {
+      name: 'Live Account',
+      balance: 10000,
+      maxDrawdown: null,
+      profitTarget: null,
+      maxContracts: null,
+      maxDailyLoss: null,
+      trailingDD: false,
+    }
+  };
+
+  let activePreset = 'apteros';
+  const MES_TICK = 1.25;   // $1.25 per tick for MES
+  const ES_TICK = 12.50;   // $12.50 per tick for ES
+  const MES_PER_ES = 10;
+
+  function setPreset(key, btn) {
+    activePreset = key;
+    const p = PRESETS[key];
+    document.getElementById('balance').value = p.balance;
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    calc();
+  }
+
+  function syncRisk() {
+    const v = document.getElementById('riskSlider').value;
+    document.getElementById('riskDisplay').textContent = v + '%';
+    calc();
+  }
+
+  function calc() {
+    const balance = parseFloat(document.getElementById('balance').value) || 0;
+    const riskPct = parseFloat(document.getElementById('riskSlider').value) || 0;
+    const stopTicks = parseInt(document.getElementById('stopTicks').value) || 1;
+    const preset = PRESETS[activePreset];
+
+    const dollarRisk = balance * (riskPct / 100);
+    const riskPerMES = stopTicks * MES_TICK;
+    const riskPerES = stopTicks * ES_TICK;
+
+    let mesRaw = Math.floor(dollarRisk / riskPerMES);
+    let esRaw = Math.floor(dollarRisk / riskPerES);
+
+    // Cap by prop firm max contracts
+    if (preset.maxContracts) {
+      mesRaw = Math.min(mesRaw, preset.maxContracts);
+      esRaw = Math.min(esRaw, Math.floor(preset.maxContracts / MES_PER_ES));
+    }
+
+    // Cap by daily loss limit if applicable
+    if (preset.maxDailyLoss) {
+      const maxByDailyMES = Math.floor(preset.maxDailyLoss / riskPerMES);
+      const maxByDailyES = Math.floor(preset.maxDailyLoss / riskPerES);
+      mesRaw = Math.min(mesRaw, maxByDailyMES);
+      esRaw = Math.min(esRaw, maxByDailyES);
+    }
+
+    mesRaw = Math.max(mesRaw, 0);
+    esRaw = Math.max(esRaw, 0);
+
+    const actualMESRisk = mesRaw * riskPerMES;
+    const actualESRisk = esRaw * riskPerES;
+
+    document.getElementById('mesContracts').textContent = mesRaw;
+    document.getElementById('mesRisk').textContent = mesRaw > 0 ? '$' + actualMESRisk.toFixed(0) + ' risk' : '';
+    document.getElementById('esContracts').textContent = esRaw;
+    document.getElementById('esRisk').textContent = esRaw > 0 ? '$' + actualESRisk.toFixed(0) + ' risk' : '';
+    document.getElementById('dollarRisk').textContent = '$' + dollarRisk.toFixed(0);
+    document.getElementById('perTick').textContent = '$' + (mesRaw * MES_TICK).toFixed(2);
+    document.getElementById('perTickSub').textContent = mesRaw + ' MES @ $1.25/tick';
+
+    // Drawdown meter
+    if (preset.maxDrawdown) {
+      const pct = Math.min((actualMESRisk / preset.maxDrawdown) * 100, 100);
+      document.getElementById('ddPercent').textContent = pct.toFixed(1) + '% of max DD';
+      const fill = document.getElementById('ddFill');
+      fill.style.width = pct + '%';
+      fill.style.background = pct < 33 ? 'var(--accent-green)' : pct < 66 ? 'var(--accent-gold)' : 'var(--accent-red)';
+    } else {
+      document.getElementById('ddPercent').textContent = 'N/A';
+      document.getElementById('ddFill').style.width = '0%';
+    }
+
+    // Rules panel
+    renderRules(preset, mesRaw, actualMESRisk);
+  }
+
+  function renderRules(p, mes, risk) {
+    document.getElementById('rulesTitle').textContent = p.name + ' Rules';
+    let html = '';
+
+    if (p.maxContracts) {
+      const ok = mes <= p.maxContracts;
+      html += ruleRow('Max Contracts (MES)', mes + ' / ' + p.maxContracts, ok ? 'ok' : 'fail');
+    }
+    if (p.maxDrawdown) {
+      const pct = ((risk / p.maxDrawdown) * 100).toFixed(1);
+      const state = pct < 33 ? 'ok' : pct < 66 ? 'warn' : 'fail';
+      html += ruleRow('Max Drawdown', '$' + risk.toFixed(0) + ' / $' + p.maxDrawdown, state);
+    }
+    if (p.maxDailyLoss) {
+      const ok = risk <= p.maxDailyLoss;
+      const state = ok ? (risk / p.maxDailyLoss < 0.66 ? 'ok' : 'warn') : 'fail';
+      html += ruleRow('Daily Loss Limit', '$' + risk.toFixed(0) + ' / $' + p.maxDailyLoss, state);
+    }
+    if (p.profitTarget) {
+      html += ruleRow('Profit Target', '$' + p.profitTarget.toLocaleString(), 'ok');
+    }
+    if (p.trailingDD) {
+      html += ruleRow('Trailing Drawdown', 'Yes — be cautious', 'warn');
+    }
+    if (!p.maxContracts && !p.maxDrawdown) {
+      html += ruleRow('Mode', 'No prop-firm limits', 'ok');
+    }
+
+    document.getElementById('rulesBody').innerHTML = html;
+  }
+
+  function ruleRow(name, value, state) {
+    return `<div class="rule-row">
+      <span class="rule-name">${name}</span>
+      <span class="rule-value rule-${state}">${value}</span>
+    </div>`;
+  }
+
+  // Init
+  calc();
+</script>
+</body>
+</html>

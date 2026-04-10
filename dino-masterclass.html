@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David's Dino Masterclass! 🦕</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#060e06; --green:#52b788; --lime:#7bed9f; --amber:#ffc107;
+    --fire:#ff6b35; --bone:#e8d5b0; --red:#f72585; --sky:#90e0ef;
+    --purple:#c77dff; --card:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;
+    background:radial-gradient(ellipse at 15% 20%,rgba(82,183,136,.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 85% 80%,rgba(255,107,53,.10) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,#060e06 0%,#020802 100%);}
+  .floaters{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .floaters span{position:absolute;opacity:.055;animation:floatUp linear infinite;}
+  @keyframes floatUp{0%{transform:translateY(105vh) rotate(0deg);opacity:0}5%{opacity:.055}95%{opacity:.055}100%{transform:translateY(-5vh) rotate(25deg);opacity:0}}
+
+  .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:16px 14px 70px;}
+
+  /* HEADER */
+  .hdr{text-align:center;margin-bottom:20px;animation:dropIn .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes dropIn{from{transform:translateY(-44px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .hdr-badge{display:inline-block;background:rgba(123,237,159,.1);border:1.5px solid rgba(123,237,159,.3);border-radius:50px;padding:5px 16px;font-size:.78rem;font-weight:800;color:var(--lime);letter-spacing:.5px;margin-bottom:8px;}
+  .hdr h1{font-family:'Boogaloo',cursive;font-size:clamp(2rem,6vw,3.2rem);color:var(--amber);text-shadow:2px 2px 0 #5a3800,0 0 30px rgba(255,193,7,.2);}
+  .hdr p{color:rgba(255,255,255,.4);font-weight:700;font-size:.88rem;margin-top:5px;}
+
+  /* TABS */
+  .tabs{display:flex;gap:10px;margin-bottom:20px;animation:dropIn .5s .08s cubic-bezier(.34,1.56,.64,1) both;}
+  .tab{flex:1;padding:11px 6px;background:var(--card);border:2px solid var(--border);border-radius:16px;font-family:'Boogaloo',cursive;font-size:.92rem;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s;text-align:center;}
+  .tab.active{background:rgba(255,193,7,.12);border-color:var(--amber);color:var(--amber);box-shadow:0 0 16px rgba(255,193,7,.15);}
+  .tab:hover:not(.active){background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);}
+
+  /* CHAPTER DOTS */
+  .ch-dots{display:flex;justify-content:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .cdot{width:36px;height:36px;border-radius:50%;background:var(--card);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all .25s;}
+  .cdot.active{background:rgba(255,193,7,.2);border-color:var(--amber);transform:scale(1.2);box-shadow:0 0 12px rgba(255,193,7,.3);}
+  .cdot.done{background:rgba(123,237,159,.15);border-color:var(--lime);}
+
+  /* CHAPTER CARD */
+  .ch-card{border-radius:26px;padding:28px 22px 22px;background:var(--card);border:2px solid rgba(123,237,159,.2);backdrop-filter:blur(8px);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:14px;}
+  @keyframes cardIn{from{transform:scale(.9) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+  .ch-num{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,193,7,.55);margin-bottom:8px;}
+  .ch-title{font-family:'Boogaloo',cursive;font-size:clamp(1.5rem,4.5vw,2.1rem);color:var(--amber);margin-bottom:4px;text-shadow:1px 1px 0 #5a3800;}
+  .ch-emoji{font-size:3.5rem;display:block;text-align:center;margin:14px 0;animation:sway 3s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+  .story{font-size:.95rem;color:rgba(255,255,255,.85);line-height:1.8;font-weight:600;margin-bottom:16px;}
+  .story strong{color:var(--amber);font-weight:900;}
+  .story em{color:var(--bone);font-style:normal;font-weight:800;}
+
+  .facts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .fbox{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 12px;}
+  .fbox .fi{font-size:1.8rem;display:block;margin-bottom:6px;}
+  .fbox .ft{font-family:'Boogaloo',cursive;font-size:.95rem;color:var(--amber);margin-bottom:4px;}
+  .fbox .fd{font-size:.78rem;color:rgba(255,255,255,.65);font-weight:700;line-height:1.5;}
+
+  .wow{background:rgba(255,107,53,.08);border:1.5px dashed rgba(255,107,53,.3);border-radius:14px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;}
+  .wow .wi{font-size:1.4rem;flex-shrink:0;}
+  .wow .wt{font-size:.82rem;color:#ffb08a;font-weight:700;line-height:1.55;}
+  .wow .wt strong{color:var(--fire);}
+
+  .dino-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+  .dino-table th{background:rgba(255,193,7,.12);color:var(--amber);font-family:'Boogaloo',cursive;font-size:.85rem;padding:10px 8px;text-align:left;border-bottom:1.5px solid rgba(255,193,7,.2);}
+  .dino-table td{font-size:.78rem;color:rgba(255,255,255,.8);font-weight:700;padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.06);line-height:1.4;}
+  .dino-table tr:hover td{background:rgba(255,255,255,.03);}
+
+  .timeline{display:flex;align-items:stretch;gap:0;margin:16px 0;overflow-x:auto;padding-bottom:4px;}
+  .tl-item{display:flex;flex-direction:column;align-items:center;min-width:100px;}
+  .tl-dot{width:38px;height:38px;border-radius:50%;border:3px solid;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;margin-bottom:8px;}
+  .tl-label{font-size:.68rem;font-weight:800;text-align:center;line-height:1.3;}
+  .tl-line{flex:1;height:3px;background:rgba(196,168,130,.2);margin-top:17px;min-width:20px;}
+
+  .ch-nav{display:flex;gap:10px;margin-top:4px;}
+  .ch-btn{flex:1;padding:13px;border:none;border-radius:50px;font-family:'Boogaloo',cursive;font-size:1.05rem;cursor:pointer;transition:all .2s;}
+  .ch-prev{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);border:2px solid var(--border);}
+  .ch-prev:hover{background:rgba(255,255,255,.12);color:white;}
+  .ch-next{background:linear-gradient(135deg,var(--amber),var(--fire));color:#060e06;box-shadow:0 4px 16px rgba(255,193,7,.3);}
+  .ch-next:hover{transform:translateY(-2px);}
+  .ch-quiz{background:linear-gradient(135deg,var(--lime),var(--green));color:#060e06;box-shadow:0 4px 16px rgba(123,237,159,.3);}
+  .ch-quiz:hover{transform:translateY(-2px);}
+
+  /* QUIZ */
+  #quizPhase{display:none;}
+  .q-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+  .qhb{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:10px 6px;text-align:center;}
+  .qhb .qhv{font-family:'Boogaloo',cursive;font-size:1.35rem;color:white;display:block;}
+  .qhb .qhl{font-size:.62rem;color:rgba(255,255,255,.35);font-weight:800;text-transform:uppercase;}
+
+  .prog-wrap{height:8px;background:rgba(255,255,255,.08);border-radius:8px;margin-bottom:18px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--lime),var(--amber));transition:width .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 10px rgba(123,237,159,.4);}
+
+  .q-card{border-radius:26px;padding:26px 22px 22px;background:var(--card);border:2px solid var(--border);backdrop-filter:blur(8px);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:14px;}
+  .q-top{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .q-tag{display:inline-block;padding:4px 12px;border-radius:50px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;border:1.5px solid;}
+  .q-type-pill{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.65rem;font-weight:800;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);}
+  .q-emoji-big{font-size:3rem;display:block;text-align:center;margin-bottom:10px;animation:sway 3s ease-in-out infinite;}
+  .q-text{font-family:'Boogaloo',cursive;font-size:clamp(1.1rem,3.5vw,1.45rem);color:white;text-align:center;line-height:1.35;margin-bottom:8px;}
+  .q-sub{font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;font-weight:700;margin-bottom:14px;line-height:1.5;font-style:italic;}
+
+  .hint-box{background:rgba(255,193,7,.07);border:1.5px dashed rgba(255,193,7,.25);border-radius:12px;padding:9px 14px;margin-bottom:14px;font-size:.8rem;color:rgba(255,193,7,.7);font-weight:700;text-align:center;cursor:pointer;transition:all .2s;}
+  .hint-box:hover{background:rgba(255,193,7,.12);}
+  .hint-box.shown{cursor:default;color:var(--amber);border-style:solid;}
+
+  .opts-4{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .opts-6{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .opt{background:rgba(255,255,255,.06);border:2px solid var(--border);border-radius:14px;padding:13px 8px;cursor:pointer;transition:all .18s;font-family:'Nunito',sans-serif;font-size:.84rem;font-weight:800;color:white;text-align:center;line-height:1.3;}
+  .opt:hover:not(:disabled){background:rgba(82,183,136,.12);border-color:rgba(82,183,136,.4);transform:scale(1.03);}
+  .opt.correct{background:rgba(123,237,159,.22)!important;border-color:var(--lime)!important;animation:pop .35s cubic-bezier(.34,1.56,.64,1);}
+  .opt.wrong{background:rgba(247,37,133,.15)!important;border-color:var(--red)!important;animation:shk .3s ease;}
+  @keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  .type-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .type-input{width:100%;max-width:400px;padding:14px 18px;background:rgba(255,255,255,.07);border:2.5px solid rgba(255,255,255,.18);border-radius:16px;font-family:'Boogaloo',cursive;font-size:1.4rem;color:white;text-align:center;outline:none;transition:all .2s;caret-color:var(--amber);}
+  .type-input::placeholder{color:rgba(255,255,255,.22);font-size:1rem;}
+  .type-input:focus{border-color:rgba(255,193,7,.6);box-shadow:0 0 20px rgba(255,193,7,.15);}
+  .type-input.ok-in{border-color:var(--lime);background:rgba(123,237,159,.08);}
+  .type-input.err-in{border-color:var(--red);background:rgba(247,37,133,.07);}
+  .submit-btn{padding:13px 34px;border:none;border-radius:50px;font-family:'Boogaloo',cursive;font-size:1.1rem;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--amber),var(--fire));color:#060e06;box-shadow:0 4px 16px rgba(255,193,7,.3);}
+  .submit-btn:hover{transform:translateY(-2px);}
+  .submit-btn:disabled{opacity:.4;cursor:default;transform:none;}
+
+  .fb{border-radius:13px;padding:13px 16px;margin-top:13px;font-weight:700;font-size:.88rem;line-height:1.55;animation:fadeUp .3s ease both;display:none;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  .fb.ok{background:rgba(123,237,159,.1);border:1.5px solid var(--lime);color:#b7f5c8;}
+  .fb.err{background:rgba(247,37,133,.08);border:1.5px solid var(--red);color:#ffaacc;}
+
+  .next-btn{display:none;width:100%;margin-top:12px;padding:14px;border:none;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Boogaloo',cursive;font-size:1.15rem;color:#060e06;background:linear-gradient(135deg,var(--amber),var(--fire));box-shadow:0 4px 16px rgba(255,193,7,.3);}
+  .next-btn:hover{transform:translateY(-2px);}
+
+  /* RESULTS */
+  #resultsSection{display:none;text-align:center;animation:cardIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+  .r-trophy{font-size:5.5rem;display:block;margin-bottom:12px;animation:bounce 1.5s ease-in-out infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .r-title{font-family:'Boogaloo',cursive;font-size:clamp(1.8rem,5vw,2.8rem);color:var(--amber);text-shadow:2px 2px 0 #5a3800;margin-bottom:6px;}
+  .r-sub{color:rgba(255,255,255,.5);font-weight:700;font-size:.95rem;margin-bottom:18px;}
+  .r-stars{font-size:2rem;letter-spacing:6px;margin-bottom:18px;}
+  .facts-learned{background:var(--card);border:1.5px solid rgba(255,193,7,.2);border-radius:18px;padding:16px;margin-bottom:16px;text-align:left;}
+  .facts-learned h3{font-family:'Boogaloo',cursive;color:var(--amber);font-size:1rem;margin-bottom:12px;}
+  .fl-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:.82rem;color:rgba(255,255,255,.8);font-weight:700;line-height:1.45;}
+  .ml-box{background:rgba(255,255,255,.03);border:1.5px solid rgba(144,224,239,.15);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:.83rem;text-align:left;}
+  .ml-box p{margin-bottom:5px;line-height:1.55;}
+  .ml-box .en{color:var(--amber);font-weight:800;}
+  .ml-box .ro{color:var(--lime);font-weight:800;}
+  .ml-box .es{color:var(--sky);font-weight:800;}
+  .r-btns{display:flex;gap:10px;}
+  .r-btn{flex:1;padding:14px;border:none;border-radius:50px;font-family:'Boogaloo',cursive;font-size:1.1rem;cursor:pointer;transition:all .2s;color:#060e06;}
+  .r-btn-learn{background:rgba(255,255,255,.08);color:white;border:2px solid var(--border);}
+  .r-btn-learn:hover{background:rgba(255,255,255,.13);}
+  .r-btn-quiz{background:linear-gradient(135deg,var(--lime),var(--green));box-shadow:0 4px 16px rgba(123,237,159,.3);}
+  .r-btn-quiz:hover{transform:scale(1.03);}
+
+  .cp{position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;animation:cf linear forwards;z-index:999;pointer-events:none;}
+  @keyframes cf{to{transform:translateY(106vh) rotate(720deg);opacity:0;}}
+</style>
+</head>
+<body>
+<div class="floaters" id="floaters"></div>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-badge">🦕 DINO MASTERCLASS — LEARN + QUIZ</div>
+    <h1>Dinosaur Masterclass! 🦖</h1>
+    <p>Read all 6 chapters → then take the big quiz! 📖➡️🧠</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabLearn" onclick="goLearn()">📖 Learn</button>
+    <button class="tab"        id="tabQuiz"  onclick="goQuiz()">⚡ Quiz Me!</button>
+  </div>
+
+  <!-- LEARN -->
+  <div id="learnPhase">
+    <div class="ch-dots" id="chDots"></div>
+    <div id="chArea"></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizPhase">
+    <div class="q-hud">
+      <div class="qhb"><span class="qhv" id="qhScore">0</span><span class="qhl">⭐ Score</span></div>
+      <div class="qhb"><span class="qhv" id="qhStreak">0🔥</span><span class="qhl">Streak</span></div>
+      <div class="qhb"><span class="qhv" id="qhNum">1/20</span><span class="qhl">Question</span></div>
+    </div>
+    <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="q-card" id="qCard">
+      <div class="q-top">
+        <span class="q-tag" id="qTag" style="color:var(--amber);border-color:var(--amber)55;background:var(--amber)12">🦕 Dinosaurs</span>
+        <span class="q-type-pill" id="qTypePill">CHOOSE</span>
+      </div>
+      <span class="q-emoji-big" id="qEmoji">🦕</span>
+      <div class="q-text" id="qText">Loading…</div>
+      <div class="q-sub"  id="qSub"></div>
+      <div class="hint-box" id="hintBox" onclick="showHint()">💡 Tap for a hint</div>
+      <div id="answerArea"></div>
+      <div class="fb" id="fb"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">Next ➡️</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsSection">
+    <span class="r-trophy" id="rTrophy">🏆</span>
+    <div class="r-title" id="rTitle">Amazing, David!</div>
+    <div class="r-sub"   id="rSub"></div>
+    <div class="r-stars" id="rStars"></div>
+    <div class="facts-learned">
+      <h3>🦕 Everything you learned today:</h3>
+      <div id="flList"></div>
+    </div>
+    <div class="ml-box" id="rMl"></div>
+    <div class="r-btns">
+      <button class="r-btn r-btn-learn" onclick="goLearn()">📖 Review Lesson</button>
+      <button class="r-btn r-btn-quiz"  onclick="goQuiz()">🔄 Try Quiz Again!</button>
+    </div>
+  </div>
+
+</div>
+<script>
+// ═══════════════════════════════════════════════
+//  CHAPTERS
+// ═══════════════════════════════════════════════
+const chapters = [
+  {
+    emoji:'⏳', title:'When Did Dinosaurs Live?',
+    content:`
+      <p class="story">Dinosaurs lived during a time called the <strong>Mesozoic Era</strong> — which is split into
+      three amazing periods. They first appeared about <strong>230 million years ago</strong> and ruled the Earth
+      for an incredible <em>165 million years!</em></p>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot" style="border-color:#ff6b35;background:rgba(255,107,53,.15)">🌋</div>
+          <div class="tl-label" style="color:#ff6b35">Triassic<br><span style="font-size:.6rem;color:rgba(255,255,255,.35)">252–201M BC<br>First dinosaurs!</span></div>
+        </div><div class="tl-line"></div>
+        <div class="tl-item">
+          <div class="tl-dot" style="border-color:#ffc107;background:rgba(255,193,7,.15)">🦕</div>
+          <div class="tl-label" style="color:#ffc107">Jurassic<br><span style="font-size:.6rem;color:rgba(255,255,255,.35)">201–145M BC<br>Giants!</span></div>
+        </div><div class="tl-line"></div>
+        <div class="tl-item">
+          <div class="tl-dot" style="border-color:#7bed9f;background:rgba(123,237,159,.15)">🦖</div>
+          <div class="tl-label" style="color:#7bed9f">Cretaceous<br><span style="font-size:.6rem;color:rgba(255,255,255,.35)">145–66M BC<br>T-Rex era!</span></div>
+        </div><div class="tl-line"></div>
+        <div class="tl-item">
+          <div class="tl-dot" style="border-color:#f72585;background:rgba(247,37,133,.15)">☄️</div>
+          <div class="tl-label" style="color:#f72585">Extinction<br><span style="font-size:.6rem;color:rgba(255,255,255,.35)">66M BC<br>Asteroid!</span></div>
+        </div>
+      </div>
+      <div class="wow"><span class="wi">🤯</span><div class="wt">T-Rex and Stegosaurus <strong>NEVER MET</strong> — they lived <strong>79 million years apart!</strong> That's more time between them than between T-Rex and YOU today!</div></div>`,
+    facts:['Dinosaurs first appeared 230 million years ago in the Triassic period','There are 3 periods: Triassic → Jurassic → Cretaceous','T-Rex and Stegosaurus lived 79 million years apart — they never met!','Dinosaurs ruled Earth for 165 million years']
+  },
+  {
+    emoji:'🦕', title:'Famous Dinosaurs — Meet the Giants!',
+    content:`
+      <p class="story">There were <strong>over 1,000 species</strong> of dinosaur! Here are some of the most
+      amazing ones you should know about:</p>
+      <table class="dino-table">
+        <tr><th>Dinosaur</th><th>Period</th><th>Diet</th><th>Cool Fact</th></tr>
+        <tr><td>🦖 <strong>T-Rex</strong></td><td>Cretaceous</td><td>🥩 Carnivore</td><td>Bite force 4× stronger than a lion!</td></tr>
+        <tr><td>🦕 <strong>Brachiosaurus</strong></td><td>Jurassic</td><td>🌿 Herbivore</td><td>Neck 9 metres long — taller than 2 giraffes!</td></tr>
+        <tr><td>⚔️ <strong>Triceratops</strong></td><td>Cretaceous</td><td>🌿 Herbivore</td><td>3 horns — TRI means three in Latin!</td></tr>
+        <tr><td>🛡️ <strong>Stegosaurus</strong></td><td>Jurassic</td><td>🌿 Herbivore</td><td>Brain the size of a walnut! 🥜</td></tr>
+        <tr><td>🦅 <strong>Velociraptor</strong></td><td>Cretaceous</td><td>🥩 Carnivore</td><td>Had feathers — only turkey-sized in real life!</td></tr>
+        <tr><td>🐊 <strong>Spinosaurus</strong></td><td>Cretaceous</td><td>🐟 Fish!</td><td>Bigger than T-Rex — ate fish from rivers!</td></tr>
+        <tr><td>💥 <strong>Ankylosaurus</strong></td><td>Cretaceous</td><td>🌿 Herbivore</td><td>Club tail could smash T-Rex bones!</td></tr>
+        <tr><td>🎺 <strong>Parasaurolophus</strong></td><td>Cretaceous</td><td>🌿 Herbivore</td><td>Hollow crest made booming sounds like a trombone!</td></tr>
+      </table>
+      <div class="wow"><span class="wi">💡</span><div class="wt">The word <strong>dinosaur</strong> means <em>"terrible lizard"</em> in Greek — but they weren't actually lizards! In Spanish: <strong>dinosaurio</strong> 🇪🇸 In Romanian: <strong>dinozaur</strong> 🇷🇴</div></div>`,
+    facts:['T-Rex had a bite force 4x stronger than a lion','Brachiosaurus had a 9-metre neck — taller than 2 giraffes','Real Velociraptors were only turkey-sized and had feathers!','Spinosaurus was bigger than T-Rex and mainly ate fish','Ankylosaurus could smash T-Rex bones with its club tail']
+  },
+  {
+    emoji:'🍖', title:'What Did Dinosaurs Eat?',
+    content:`
+      <p class="story">Dinosaurs had <strong>three main diets</strong> — and each type had special features to
+      match what they ate:</p>
+      <div class="facts-grid">
+        <div class="fbox"><span class="fi">🥩</span><div class="ft">Carnivore</div><div class="fd">Meat eaters! Sharp teeth, powerful claws, fast runners. T-Rex, Velociraptor, Spinosaurus, Allosaurus. <em>Carne = meat in Spanish!</em></div></div>
+        <div class="fbox"><span class="fi">🌿</span><div class="ft">Herbivore</div><div class="fd">Plant eaters! Flat teeth for grinding, long necks to reach leaves. Brachiosaurus, Triceratops, Stegosaurus, Diplodocus. <em>Herba = plant in Latin!</em></div></div>
+        <div class="fbox"><span class="fi">🍔</span><div class="ft">Omnivore</div><div class="fd">Ate EVERYTHING — plants and meat! Like Oviraptor and Ornithomimus. <em>Omni = all/everything!</em></div></div>
+        <div class="fbox"><span class="fi">📏</span><div class="ft">Size Matters</div><div class="fd">The biggest dinosaurs were herbivores — they needed to eat 200–400kg of plants EVERY DAY just to survive!</div></div>
+      </div>
+      <div class="wow"><span class="wi">🦷</span><div class="wt">T-Rex had <strong>60 banana-sized teeth</strong> — each up to 20cm long! If a tooth fell out, a new one grew back. T-Rex went through <strong>thousands of teeth</strong> in its lifetime!</div></div>`,
+    facts:['Carnivore = meat eater (carne = meat in Spanish/Latin)','Herbivore = plant eater (herba = plant in Latin)','Omnivore = eats everything (omni = all)','T-Rex had 60 banana-sized teeth that kept growing back','Large herbivores ate 200–400kg of plants every single day!']
+  },
+  {
+    emoji:'🦴', title:'Incredible Dinosaur Bodies!',
+    content:`
+      <p class="story">Dinosaur bodies were <strong>incredible engineering!</strong> From feathers to club tails,
+      they had amazing adaptations to survive:</p>
+      <div class="facts-grid">
+        <div class="fbox"><span class="fi">🪶</span><div class="ft">Feathers!</div><div class="fd">Many dinosaurs had feathers — not just birds! Velociraptor, Yutyrannus and others had feathered coats. T-Rex may have had some too!</div></div>
+        <div class="fbox"><span class="fi">🌡️</span><div class="ft">Warm-blooded</div><div class="fd">Scientists now think most dinosaurs were warm-blooded — like mammals and birds — not cold-blooded like lizards!</div></div>
+        <div class="fbox"><span class="fi">🧠</span><div class="ft">Big Brains?</div><div class="fd">Troodon had the biggest brain relative to its size — possibly the smartest dinosaur. Stegosaurus had a brain the size of a walnut! 🥜</div></div>
+        <div class="fbox"><span class="fi">🥚</span><div class="ft">Eggs!</div><div class="fd">All dinosaurs laid eggs — like birds and reptiles today! The biggest dino eggs were the size of a rugby ball!</div></div>
+        <div class="fbox"><span class="fi">👃</span><div class="ft">Great Senses</div><div class="fd">T-Rex had an incredible sense of smell — its brain was 2/3 dedicated to smell! It could sniff out prey from miles away!</div></div>
+        <div class="fbox"><span class="fi">💀</span><div class="ft">Hollow Bones</div><div class="fd">Many dinosaurs had hollow bones — just like modern birds! This made them lighter so they could move faster!</div></div>
+      </div>
+      <div class="wow"><span class="wi">🤯</span><div class="wt">The <strong>Pachycephalosaurus</strong> had a skull dome <strong>25cm thick</strong> — it head-butted rivals like a battering ram! <em>Pachy = thick, cephalo = head, saurus = lizard</em> in Greek!</div></div>`,
+    facts:['Many dinosaurs had FEATHERS — not just birds!','Most dinosaurs were warm-blooded like mammals, not cold-blooded','Stegosaurus had a brain the size of a walnut 🥜','All dinosaurs laid eggs — the biggest were rugby ball sized','T-Rex used 2/3 of its brain just for SMELL — it could sniff prey from miles away','Pachycephalosaurus had a 25cm thick skull dome for head-butting!']
+  },
+  {
+    emoji:'🐦', title:'Dinosaurs Are NOT Extinct!',
+    content:`
+      <p class="story">Here's a mind-blowing fact — <strong>dinosaurs are NOT all extinct!</strong>
+      One group survived the asteroid 66 million years ago and is still alive today…</p>
+      <div class="wow" style="margin-bottom:16px"><span class="wi">🐦</span><div class="wt"><strong>BIRDS are living dinosaurs!</strong> They evolved directly from feathered theropod dinosaurs like Velociraptor. Every chicken, sparrow, eagle and penguin alive today is a living dinosaur! 🦕➡️🐦</div></div>
+      <div class="facts-grid">
+        <div class="fbox"><span class="fi">🪶</span><div class="ft">Feathered Theropods</div><div class="fd">Birds evolved from small feathered theropod dinosaurs. The first bird-like fossil was Archaeopteryx, found in 1861!</div></div>
+        <div class="fbox"><span class="fi">🦴</span><div class="ft">Same Body Parts</div><div class="fd">Birds have the same basic skeleton as theropod dinosaurs — wishbone, hollow bones, three-toed feet. They ARE dinosaurs!</div></div>
+        <div class="fbox"><span class="fi">🥚</span><div class="ft">Same Eggs</div><div class="fd">Birds lay eggs just like dinosaurs did. The way they sit on nests, incubate eggs and care for young is inherited from dinosaurs!</div></div>
+        <div class="fbox"><span class="fi">🐊</span><div class="ft">Closest Relatives</div><div class="fd">After birds, the closest living relatives of dinosaurs are CROCODILES — they share a common ancestor from 240M years ago!</div></div>
+      </div>
+      <p class="story">So next time you see a pigeon or a chicken — you're looking at a <strong>real live dinosaur!</strong> 🦕</p>`,
+    facts:['BIRDS are living dinosaurs — they survived the asteroid!','Birds evolved from feathered theropod dinosaurs like Velociraptor','Archaeopteryx (1861) was the first bird-like dinosaur fossil found','Birds and dinosaurs share hollow bones, wishbones and three-toed feet','After birds, CROCODILES are the closest living relatives of dinosaurs']
+  },
+  {
+    emoji:'☄️', title:'The Great Extinction!',
+    content:`
+      <p class="story">About <strong>66 million years ago</strong>, something catastrophic happened that ended the
+      reign of the non-bird dinosaurs forever. Here's the incredible story:</p>
+      <div class="facts-grid">
+        <div class="fbox"><span class="fi">☄️</span><div class="ft">The Asteroid</div><div class="fd">A 10km wide rock from space (the size of a city!) slammed into Earth near modern-day Mexico at 72,000 km/h!</div></div>
+        <div class="fbox"><span class="fi">💥</span><div class="ft">The Impact</div><div class="fd">The explosion had the power of a BILLION nuclear bombs. It left a crater 180km wide — the Chicxulub crater in Mexico!</div></div>
+        <div class="fbox"><span class="fi">🌑</span><div class="ft">Nuclear Winter</div><div class="fd">Billions of tonnes of dust blocked the sun. Plants died → herbivores starved → carnivores followed. A chain reaction of death!</div></div>
+        <div class="fbox"><span class="fi">🌋</span><div class="ft">Volcanoes Too!</div><div class="fd">Massive volcanic eruptions in India (the Deccan Traps) were already happening — the asteroid made things even worse!</div></div>
+        <div class="fbox"><span class="fi">💀</span><div class="ft">75% of Species!</div><div class="fd">About 75% of ALL life on Earth was wiped out — not just dinosaurs but flying reptiles, sea reptiles and much more!</div></div>
+        <div class="fbox"><span class="fi">🌅</span><div class="ft">Life Survived!</div><div class="fd">Small mammals, birds, crocodilians and some other creatures survived — and mammals eventually evolved into humans! 👨</div></div>
+      </div>
+      <div class="wow"><span class="wi">🇲🇽</span><div class="wt">The <strong>Chicxulub crater</strong> where the asteroid hit is <strong>180km wide</strong> and still exists today — mostly buried under the Gulf of Mexico and the Yucatán Peninsula! Scientists proved this was the cause of extinction in 1980!</div></div>`,
+    facts:['A 10km wide asteroid hit Earth 66 million years ago near Mexico','The impact left the Chicxulub crater — 180km wide!','Dust blocked the sun, killing plants, then all animals that ate them','About 75% of ALL species on Earth went extinct','Birds, small mammals and crocodilians survived','Scientists confirmed the asteroid theory in 1980']
+  }
+];
+
+// ═══════════════════════════════════════════════
+//  QUIZ QUESTIONS — 20 total, mix of type + pick
+// ═══════════════════════════════════════════════
+const questions = [
+  // TIME PERIODS
+  { cat:'⏳ Time Periods', type:'pick4', e:'⏳', col:'#ffc107',
+    q:'Which is the CORRECT order of dinosaur time periods, oldest first?',
+    sub:'There are 3 main periods — remember T-J-C!',
+    hint:'Triassic came FIRST — T-J-C like a secret code!',
+    opts:['Jurassic → Triassic → Cretaceous','Triassic → Jurassic → Cretaceous','Cretaceous → Jurassic → Triassic','Jurassic → Cretaceous → Triassic'], c:1,
+    ok:'🌟 Triassic → Jurassic → Cretaceous! T-J-C. The Triassic started 252 million years ago!',
+    err:'Triassic → Jurassic → Cretaceous! Remember T-J-C. The Triassic came first, 252 million years ago!' },
+
+  { cat:'⏳ Time Periods', type:'type', e:'🦖', col:'#ffc107',
+    q:'T-Rex lived in the Cretaceous period. About how many MILLION years ago did it live?',
+    sub:'It was near the END of the dinosaur age',
+    hint:'Think 60-something million…',
+    accept:['66','65','67'],
+    ok:'🔥 About 66 million years ago! T-Rex was one of the very last non-bird dinosaurs!',
+    err:'About 66 million years ago — right at the end of the Cretaceous period!' },
+
+  { cat:'⏳ Time Periods', type:'pick4', e:'🤯', col:'#ffc107',
+    q:'T-Rex and Stegosaurus — did they ever meet each other?',
+    sub:'Think about which periods they lived in!',
+    hint:'One was Jurassic, one was Cretaceous…',
+    opts:['Yes — they fought each other!','Yes — they lived side by side','No — they lived 79 million years apart!','No — different continents only'], c:2,
+    ok:'😱 NO! They lived 79 million years APART — more time between them than between T-Rex and us today!',
+    err:'NO! T-Rex (Cretaceous) and Stegosaurus (Jurassic) lived 79 million years apart — they never met!' },
+
+  // FAMOUS DINOS
+  { cat:'🦕 Famous Dinosaurs', type:'type', e:'🦕', col:'#7bed9f',
+    q:'What is the name of the BIGGEST long-necked dinosaur — it had a 9-metre neck?',
+    sub:'It lived in the Jurassic period and ate tree tops',
+    hint:'Brachio = arm in Latin — Brachio-saurus',
+    accept:['brachiosaurus'],
+    ok:'🦕 BRACHIOSAURUS! Its neck was 9 metres long — taller than two giraffes stacked up!',
+    err:'BRACHIOSAURUS! Its neck was 9 metres long. It lived in the Jurassic and ate the tops of tall trees!' },
+
+  { cat:'🦕 Famous Dinosaurs', type:'pick6', e:'⚔️', col:'#7bed9f',
+    q:'Triceratops had 3 horns. What does "TRI" mean?',
+    sub:'Tri is a Latin/Greek prefix — you see it in other words too!',
+    hint:'Think of a TRICYCLE — how many wheels does it have?',
+    opts:['One','Two','Three','Four','Five','Six'], c:2,
+    ok:'✅ THREE! TRI = three. Tri-cycle (3 wheels), Tri-angle (3 sides), Tri-ceratops (3 horns)!',
+    err:'TRI = THREE! Tricycle = 3 wheels, triangle = 3 sides, TRIceratops = 3 horns!' },
+
+  { cat:'🦕 Famous Dinosaurs', type:'pick4', e:'🐟', col:'#7bed9f',
+    q:'Spinosaurus was a carnivore — but what did it MAINLY eat?',
+    sub:'It had long crocodile-like jaws and lived near rivers',
+    hint:'Think about what swims in rivers…',
+    opts:['Other large dinosaurs','Small mammals and eggs','Fish — it lived near water!','Plants and roots'], c:2,
+    ok:'🐟 FISH! Spinosaurus was basically a giant prehistoric heron — it waded in rivers catching fish!',
+    err:'FISH! Spinosaurus had crocodile-like jaws perfect for catching fish in rivers. Not a typical meat-eater!' },
+
+  { cat:'🦕 Famous Dinosaurs', type:'pick4', e:'🦅', col:'#7bed9f',
+    q:'How BIG was a real Velociraptor — NOT the Jurassic Park version?',
+    sub:'Films made them look much bigger than reality!',
+    hint:'Think of a bird you might see in your garden…',
+    opts:['Same size as T-Rex (12m long)','Size of a horse','About turkey-sized — 0.5m tall!','Size of a large dog'], c:2,
+    ok:'🦃 Turkey-sized! Real Velociraptors were only 0.5m tall and had FEATHERS — like a deadly feathered turkey!',
+    err:'Real Velociraptors were only about TURKEY-SIZED (0.5m)! And they had feathers too!' },
+
+  // DIET
+  { cat:'🍖 Diet', type:'type', e:'🌿', col:'#ff6b35',
+    q:'What is the word for a dinosaur that ONLY eats plants?\nHerb = plant + vore = eater',
+    sub:'Brachiosaurus and Stegosaurus were this type',
+    hint:'herb + i + vore',
+    accept:['herbivore'],
+    ok:'🌿 HERBIVORE! Herb=plant, vore=eater. The biggest dinosaurs were all herbivores!',
+    err:'HERBIVORE! Herb (plant) + vore (eater). The biggest dinosaurs like Brachiosaurus only ate plants!' },
+
+  { cat:'🍖 Diet', type:'type', e:'🍔', col:'#ff6b35',
+    q:'What do you call an animal that eats BOTH plants AND meat?\nOmni = all/everything',
+    sub:'Think: omni + vore',
+    hint:'omni-vore…',
+    accept:['omnivore'],
+    ok:'🍔 OMNIVORE! Omni=all/everything. Some humans are omnivores too — we eat both plants and meat!',
+    err:'OMNIVORE — omni (all/everything) + vore (eater). Eats both plants and meat!' },
+
+  { cat:'🍖 Diet', type:'pick4', e:'🦷', col:'#ff6b35',
+    q:'How many teeth did T-Rex have — and did they grow back?',
+    sub:'T-Rex was designed to be the ultimate predator!',
+    hint:'Think banana-sized teeth… lots of them…',
+    opts:['10 teeth that never grew back','About 60 banana-sized teeth that kept growing back!','200 tiny teeth like a shark','Just 4 huge fangs'], c:1,
+    ok:'🦷 60 banana-sized teeth — each up to 20cm long — and NEW ones grew back when old ones fell out!',
+    err:'T-Rex had about 60 banana-sized teeth, each up to 20cm long! New ones grew back throughout its life!' },
+
+  // BODIES
+  { cat:'🦴 Dino Bodies', type:'pick4', e:'🪶', col:'#90e0ef',
+    q:'Did Velociraptors have FEATHERS in real life?',
+    sub:'This might surprise you!',
+    hint:'Think about what birds have — and birds ARE dinosaurs…',
+    opts:['No — they had smooth scaly skin','No — they had rough bumpy skin','Yes — they had feathers like a deadly bird!','Only baby Velociraptors had feathers'], c:2,
+    ok:'🪶 YES! Real Velociraptors had feathers — they looked like terrifying feathered birds, not the scaly Jurassic Park version!',
+    err:'Yes — FEATHERS! Real Velociraptors had feathers. The Jurassic Park films got it wrong — they should look more like big scary birds!' },
+
+  { cat:'🦴 Dino Bodies', type:'type', e:'🧠', col:'#90e0ef',
+    q:'What was the size of a Stegosaurus brain — about the same size as a…?',
+    sub:'Stegosaurus was enormous but not very clever!',
+    hint:'A small nut that squirrels love…',
+    accept:['walnut','a walnut'],
+    ok:'🥜 A WALNUT! Poor Stegosaurus — it weighed 5 tonnes but had a brain the size of a walnut! 😄',
+    err:'A WALNUT! Stegosaurus was 5 tonnes but had a tiny walnut-sized brain — not the smartest dinosaur!' },
+
+  { cat:'🦴 Dino Bodies', type:'pick6', e:'💥', col:'#90e0ef',
+    q:'Pachycephalosaurus had a thick skull dome. What was it used for?',
+    sub:'Pachy = thick, cephalo = head, saurus = lizard',
+    hint:'Think about two mountain goats fighting…',
+    opts:['To attract mates with its appearance','To sense vibrations underground','To store food in its head','For head-butting rivals like a battering ram!','To help it swim better','To protect it from sunburn'], c:3,
+    ok:'💥 HEAD-BUTTING! Its 25cm thick dome was used to smash into rivals — like a living battering ram!',
+    err:'HEAD-BUTTING! Pachycephalosaurus used its 25cm thick skull dome to head-butt rivals in fights!' },
+
+  // BIRDS & EVOLUTION
+  { cat:'🐦 Birds & Evolution', type:'type', e:'🐦', col:'#c77dff',
+    q:'Which group of animals alive TODAY are actually living dinosaurs?',
+    sub:'They survived the extinction 66 million years ago!',
+    hint:'You can see them in the sky and in trees every day…',
+    accept:['birds','bird'],
+    ok:'🐦 BIRDS! Every bird alive today is a living dinosaur — they evolved from feathered theropods!',
+    err:'BIRDS! They evolved from feathered theropod dinosaurs and survived the asteroid. Every bird = a living dinosaur!' },
+
+  { cat:'🐦 Birds & Evolution', type:'pick4', e:'🪶', col:'#c77dff',
+    q:'What was the name of the first feathered dinosaur fossil, found in Germany in 1861?',
+    sub:'It had both dinosaur AND bird features — a key discovery!',
+    hint:'Archaeo = ancient, pteryx = wing',
+    opts:['Velociraptor','Microraptor','Archaeopteryx','Sinornithosaurus'], c:2,
+    ok:'🪶 ARCHAEOPTERYX! Found in 1861 in Germany — it had dinosaur teeth AND bird feathers. The missing link!',
+    err:'ARCHAEOPTERYX! Found in 1861, it had dinosaur teeth AND bird feathers — proving birds evolved from dinosaurs!' },
+
+  { cat:'🐦 Birds & Evolution', type:'pick4', e:'🐊', col:'#c77dff',
+    q:'After birds, what living animals are the CLOSEST relatives of dinosaurs?',
+    sub:'They\'ve been on Earth for 240 million years!',
+    hint:'They live in rivers and swamps and have very long jaws and sharp teeth…',
+    opts:['Lizards and snakes','Komodo dragons','Crocodiles and alligators!','Sharks'], c:2,
+    ok:'🐊 CROCODILES! After birds, crocs are the nearest living relatives of dinosaurs — they share a 240M year old ancestor!',
+    err:'CROCODILES (and alligators)! After birds, they are the closest living relatives of dinosaurs!' },
+
+  // EXTINCTION
+  { cat:'☄️ Extinction', type:'type', e:'☄️', col:'#f72585',
+    q:'What hit Earth 66 million years ago and caused the mass extinction?\nIt came from SPACE!',
+    sub:'It was about 10km wide — the size of a city',
+    hint:'It\'s bigger than a meteor, smaller than a planet…',
+    accept:['asteroid','an asteroid'],
+    ok:'☄️ ASTEROID! A 10km wide space rock hit Earth with the force of a billion nuclear bombs!',
+    err:'An ASTEROID! A 10km wide rock from space — travelling at 72,000 km/h — wiped out the dinosaurs!' },
+
+  { cat:'☄️ Extinction', type:'pick4', e:'🌍', col:'#f72585',
+    q:'WHERE did the extinction asteroid hit Earth?',
+    sub:'There is still a crater there today!',
+    hint:'A warm country south of the USA — famous for tacos and beaches…',
+    opts:['Egypt 🇪🇬','Russia 🇷🇺','Mexico 🇲🇽 — Yucatán Peninsula!','Australia 🇦🇺'], c:2,
+    ok:'🇲🇽 MEXICO! The Chicxulub crater in the Yucatán Peninsula is 180km wide — still there today!',
+    err:'MEXICO! The Chicxulub crater in the Yucatán Peninsula — 180km wide — is still there buried underground!' },
+
+  { cat:'☄️ Extinction', type:'pick6', e:'📊', col:'#f72585',
+    q:'Roughly what percentage of ALL species went extinct 66 million years ago?',
+    sub:'It wasn\'t just dinosaurs that died — it was almost everything!',
+    hint:'Think about three quarters…',
+    opts:['About 10%','About 25%','About 50%','About 75%!','About 90%','Exactly 100%'], c:3,
+    ok:'😱 About 75%! Three quarters of ALL life on Earth was wiped out — dinosaurs, flying reptiles, sea creatures and more!',
+    err:'About 75% — three quarters of ALL species! Not just dinosaurs — flying reptiles, sea reptiles and many more!' },
+
+  { cat:'☄️ Extinction', type:'pick4', e:'🌑', col:'#f72585',
+    q:'After the asteroid hit, what happened to cause plants to die all over Earth?',
+    sub:'Without this, plants couldn\'t survive',
+    hint:'Plants need this from the sun to make food…',
+    opts:['All the water dried up','A huge dust cloud BLOCKED the sunlight!','The temperature got too hot','All the soil turned to rock'], c:1,
+    ok:'🌑 DUST CLOUD! Billions of tonnes of debris blocked the sun — no sunlight = no photosynthesis = plants died!',
+    err:'A massive DUST CLOUD blocked the sun! No sunlight → plants died → herbivores starved → carnivores died too!' },
+
+  { cat:'🦕 Grand Finale!', type:'type', e:'🏆', col:'#ffc107',
+    q:'What is the scientific name for studying dinosaurs and prehistoric life?\nPalaeo = ancient + onto = being + logy = study of',
+    sub:'Scientists who do this are called palaeo-ntol-ogists',
+    hint:'Palaeo-on-to-logy…',
+    accept:['palaeontology','paleontology'],
+    ok:'🏆 PALAEONTOLOGY! The study of ancient life. Could be YOUR future career, David! 🦕🔬',
+    err:'PALAEONTOLOGY — palaeo (ancient) + onto (being) + logy (study of). Scientists who study fossils!' },
+];
+
+// ── STATE ─────────────────────────────────────
+let chIdx=0, seenChs=new Set([0]);
+let qIdx=0, score=0, streak=0, bestStreak=0, answered=false, hintShown=false;
+
+// floaters
+const flEl=document.getElementById('floaters');
+const fIcons=['🦕','🦖','🦴','☄️','🪶','🌍','🔬','🧪','🥚','🪨','🦷','🐦','⏳','💥','🌿','🥩'];
+for(let i=0;i<18;i++){const s=document.createElement('span');s.textContent=fIcons[Math.floor(Math.random()*fIcons.length)];s.style.left=(Math.random()*100)+'%';s.style.fontSize=(.9+Math.random()*1.3)+'rem';s.style.animationDuration=(9+Math.random()*13)+'s';s.style.animationDelay=(Math.random()*10)+'s';flEl.appendChild(s);}
+
+// ── LEARN ──────────────────────────────────────
+function buildDots(){
+  const dc=document.getElementById('chDots'); dc.innerHTML='';
+  chapters.forEach((ch,i)=>{
+    const d=document.createElement('div');
+    d.className='cdot'+(i===chIdx?' active':seenChs.has(i)?' done':'');
+    d.textContent=ch.emoji;
+    d.onclick=()=>{chIdx=i;seenChs.add(i);buildDots();renderCh();};
+    dc.appendChild(d);
+  });
+}
+
+function renderCh(){
+  const ch=chapters[chIdx];
+  const isLast=chIdx===chapters.length-1;
+  const area=document.getElementById('chArea');
+  area.innerHTML=`<div class="ch-card" id="chCard">
+    <div class="ch-num">Chapter ${chIdx+1} of ${chapters.length}</div>
+    <div class="ch-title">${ch.emoji} ${ch.title}</div>
+    ${ch.content}
+    <div class="ch-nav">
+      ${chIdx>0?`<button class="ch-btn ch-prev" onclick="moveCh(-1)">⬅️ Back</button>`:''}
+      ${!isLast
+        ?`<button class="ch-btn ch-next" onclick="moveCh(1)">Next Chapter ➡️</button>`
+        :`<button class="ch-btn ch-quiz" onclick="goQuiz()">⚡ Ready — Quiz me!</button>`}
+    </div>
+  </div>`;
+  const card=document.getElementById('chCard');
+  card.style.animation='none'; void card.offsetWidth; card.style.animation='cardIn .45s cubic-bezier(.34,1.56,.64,1) both';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function moveCh(dir){
+  chIdx=Math.max(0,Math.min(chapters.length-1,chIdx+dir));
+  seenChs.add(chIdx); buildDots(); renderCh();
+}
+
+function goLearn(){
+  document.getElementById('learnPhase').style.display='block';
+  document.getElementById('quizPhase').style.display='none';
+  document.getElementById('resultsSection').style.display='none';
+  document.getElementById('tabLearn').classList.add('active');
+  document.getElementById('tabQuiz').classList.remove('active');
+}
+
+// ── QUIZ ──────────────────────────────────────
+function goQuiz(){
+  document.getElementById('learnPhase').style.display='none';
+  document.getElementById('quizPhase').style.display='block';
+  document.getElementById('resultsSection').style.display='none';
+  document.getElementById('tabLearn').classList.remove('active');
+  document.getElementById('tabQuiz').classList.add('active');
+  qIdx=0; score=0; streak=0; bestStreak=0; answered=false; hintShown=false;
+  document.getElementById('qhScore').textContent='0';
+  document.getElementById('qhStreak').textContent='0🔥';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderQ(){
+  answered=false; hintShown=false;
+  const q=questions[qIdx];
+  document.getElementById('qhNum').textContent=`${qIdx+1}/${questions.length}`;
+  document.getElementById('progFill').style.width=((qIdx/questions.length)*100)+'%';
+  document.getElementById('qTypePill').textContent=q.type==='type'?'⌨️ TYPE IT':'🖱️ CHOOSE';
+  document.getElementById('qEmoji').textContent=q.e;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qSub').textContent=q.sub||'';
+
+  const tag=document.getElementById('qTag');
+  tag.textContent=q.cat; tag.style.color=q.col; tag.style.borderColor=q.col+'55'; tag.style.background=q.col+'12';
+
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+  const hb=document.getElementById('hintBox'); hb.className='hint-box'; hb.textContent='💡 Tap for a hint';
+
+  const aa=document.getElementById('answerArea'); aa.innerHTML='';
+  if(q.type==='type'){
+    aa.innerHTML=`<div class="type-wrap">
+      <input class="type-input" id="typeIn" placeholder="Type your answer…" autocomplete="off" spellcheck="false"/>
+      <button class="submit-btn" id="subBtn" onclick="submitType()">✅ Check Answer</button>
+    </div>`;
+    const inp=document.getElementById('typeIn');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')submitType();});
+    setTimeout(()=>inp.focus(),100);
+  } else {
+    const grid=document.createElement('div');
+    grid.className=q.type==='pick6'?'opts-6':'opts-4';
+    q.opts.forEach((opt,i)=>{
+      const btn=document.createElement('button'); btn.className='opt'; btn.textContent=opt;
+      btn.onclick=()=>pickOpt(i,btn); grid.appendChild(btn);
+    });
+    aa.appendChild(grid);
+  }
+  const card=document.getElementById('qCard');
+  card.style.animation='none'; void card.offsetWidth; card.style.animation='cardIn .45s cubic-bezier(.34,1.56,.64,1) both';
+}
+
+function showHint(){
+  if(hintShown||answered)return;
+  hintShown=true;
+  const hb=document.getElementById('hintBox');
+  hb.className='hint-box shown'; hb.textContent='💡 Hint: '+questions[qIdx].hint;
+}
+
+function submitType(){
+  if(answered)return;
+  const inp=document.getElementById('typeIn'), val=inp.value.trim().toLowerCase();
+  if(!val){inp.focus();return;}
+  const q=questions[qIdx];
+  const correct=q.accept.some(a=>val===a.toLowerCase());
+  inp.disabled=true; document.getElementById('subBtn').disabled=true;
+  inp.className='type-input '+(correct?'ok-in':'err-in');
+  processAns(correct,q);
+}
+
+function pickOpt(chosen,btn){
+  if(answered)return;
+  const q=questions[qIdx];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=chosen===q.c;
+  if(correct) btn.classList.add('correct');
+  else { btn.classList.add('wrong'); document.querySelectorAll('.opt')[q.c].classList.add('correct'); }
+  processAns(correct,q);
+}
+
+function processAns(correct,q){
+  answered=true;
+  const fb=document.getElementById('fb'); fb.style.display='block';
+  if(correct){
+    const pts=10+(streak>=2?5:0)+(!hintShown?3:0);
+    score+=pts; streak++; if(streak>bestStreak)bestStreak=streak;
+    document.getElementById('qhScore').textContent=score;
+    document.getElementById('qhStreak').textContent=streak+'🔥';
+    fb.className='fb ok';
+    fb.textContent=q.ok+(streak>=3?` 🔥 ${streak} in a row!`:'')+(!hintShown?' ⭐ No-hint bonus!':'');
+  } else {
+    streak=0; document.getElementById('qhStreak').textContent='0🔥';
+    fb.className='fb err'; fb.textContent=q.err;
+  }
+  document.getElementById('nextBtn').style.display='block';
+}
+
+function nextQ(){
+  qIdx++;
+  if(qIdx>=questions.length) showResults();
+  else renderQ();
+}
+
+// ── RESULTS ───────────────────────────────────
+function showResults(){
+  document.getElementById('quizPhase').style.display='none';
+  document.getElementById('resultsSection').style.display='block';
+  document.getElementById('progFill').style.width='100%';
+
+  const correct=questions.filter((_,i)=>i<qIdx).length; // approx — tracked via score
+  const pct=score/(questions.length*13); // max ~13pts per q with bonuses
+  const rawPct = score / (questions.length * 10);
+
+  let trophy,title,sub;
+  if(rawPct>=1)      {trophy='🏆';title='PERFECT, David!';sub=`${score} points! Every single question right — you ARE the Dinosaur Masterclass champion! 🦕👑`;}
+  else if(rawPct>=.8){trophy='🥇';title='Dino Expert, David!';sub=`${score} points! Outstanding knowledge across ALL topics — time periods, bodies, extinction and more! 🔥`;}
+  else if(rawPct>=.6){trophy='🥈';title='Brilliant work, David!';sub=`${score} points! Really impressive dino knowledge! Go over the chapters and try again! 💪`;}
+  else if(rawPct>=.4){trophy='🦕';title='Good effort, David!';sub=`${score} points! Re-read the lesson and try again — you\'ll smash it! 🚀`;}
+  else               {trophy='🦴';title='Keep going, David!';sub=`${score} points! Read every chapter carefully first, then try the quiz. You can do it! 💪`;}
+
+  document.getElementById('rTrophy').textContent=trophy;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rSub').textContent=sub;
+  document.getElementById('rStars').textContent=rawPct>=1?'⭐⭐⭐⭐⭐':rawPct>=.8?'⭐⭐⭐⭐':rawPct>=.6?'⭐⭐⭐':rawPct>=.4?'⭐⭐':'⭐';
+
+  const fl2=document.getElementById('flList'); fl2.innerHTML='';
+  chapters.forEach(ch=>{
+    ch.facts.forEach(f=>{
+      const d=document.createElement('div'); d.className='fl-row';
+      d.innerHTML=`<span style="font-size:.9rem;flex-shrink:0">🦕</span><span>${f}</span>`; fl2.appendChild(d);
+    });
+  });
+
+  const ml=document.getElementById('rMl');
+  if(rawPct>=.7){
+    ml.innerHTML=`
+      <p class="en">🇬🇧 Incredible, David! Time periods, diets, bodies, evolution, extinction — you know it ALL! 🦕👑</p>
+      <p class="ro">🇷🇴 Incredibil, David! Perioade, diete, corpuri, evoluție, extincție — ești un expert total în dinozauri! 🌟</p>
+      <p class="es">🇪🇸 ¡Increíble, David! ¡Períodos, dietas, cuerpos, evolución, extinción — eres el campeón de los dinosaurios! 🏆</p>`;
+  } else {
+    ml.innerHTML=`
+      <p class="en">🇬🇧 Good effort, David! Read the chapters again carefully then retake the quiz — you\'ll do much better! 💪</p>
+      <p class="ro">🇷🇴 Efort bun, David! Recitește capitolele cu atenție și încearcă din nou — vei reuși! 📚</p>
+      <p class="es">🇪🇸 ¡Buen esfuerzo, David! ¡Vuelve a leer los capítulos e inténtalo de nuevo! 🔄</p>`;
+  }
+  if(rawPct>=.6) launchConfetti();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function launchConfetti(){
+  const cols=['#ffc107','#7bed9f','#ff6b35','#f72585','#90e0ef','#c77dff','#e8d5b0'];
+  for(let i=0;i<90;i++){setTimeout(()=>{const c=document.createElement('div');c.className='cp';c.style.left=(Math.random()*100)+'vw';c.style.background=cols[Math.floor(Math.random()*cols.length)];c.style.animationDuration=(1.5+Math.random()*2.5)+'s';c.style.animationDelay=(Math.random()*.4)+'s';c.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(c);setTimeout(()=>c.remove(),3500);},i*20);}
+}
+
+// INIT
+buildDots(); renderCh();
+</script>
+</body>
+</html>

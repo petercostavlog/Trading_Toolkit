@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Toolkit — Peter's Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0b0f;
+    --bg-secondary: #12131a;
+    --bg-card: #181922;
+    --bg-card-hover: #1e2030;
+    --bg-input: #0e0f15;
+    --border: #252738;
+    --border-hover: #3a3d56;
+    --text-primary: #e8e9f0;
+    --text-secondary: #8b8fa4;
+    --text-muted: #555874;
+    --accent-gold: #BEA064;
+    --accent-gold-dim: rgba(190, 160, 100, 0.15);
+    --accent-gold-glow: rgba(190, 160, 100, 0.3);
+    --accent-green: #3dd68c;
+    --accent-green-dim: rgba(61, 214, 140, 0.12);
+    --accent-red: #f25f5c;
+    --accent-red-dim: rgba(242, 95, 92, 0.12);
+    --accent-blue: #5c9cf2;
+    --accent-blue-dim: rgba(92, 156, 242, 0.12);
+    --accent-purple: #a78bfa;
+    --accent-purple-dim: rgba(167, 139, 250, 0.12);
+    --accent-cyan: #22d3ee;
+    --accent-cyan-dim: rgba(34, 211, 238, 0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ATMOSPHERE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%; left: -20%;
+    width: 80vw; height: 80vh;
+    background: radial-gradient(ellipse, rgba(190,160,100,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%; right: -10%;
+    width: 60vw; height: 60vh;
+    background: radial-gradient(ellipse, rgba(92,156,242,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: relative; z-index: 1;
+    padding: 40px 48px 24px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left h1 {
+    font-size: 32px; font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header-left p {
+    color: var(--text-secondary); font-size: 14px; margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .header-right {
+    display: flex; gap: 12px; align-items: center;
+  }
+  .clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text-muted);
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: var(--radius-sm);
+  }
+  .btn-settings {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-secondary); padding: 8px 16px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-settings:hover {
+    border-color: var(--accent-gold); color: var(--accent-gold);
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    position: relative; z-index: 1;
+    padding: 20px 48px;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  .search-box {
+    flex: 1; min-width: 200px; max-width: 400px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 16px;
+    color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 14px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--accent-gold); }
+  .search-box::placeholder { color: var(--text-muted); }
+  .filter-btn {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-secondary); padding: 10px 18px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--accent-gold-dim); border-color: var(--accent-gold);
+    color: var(--accent-gold);
+  }
+
+  /* ── MAIN GRID ── */
+  .main {
+    position: relative; z-index: 1;
+    padding: 8px 48px 60px;
+  }
+  .category {
+    margin-top: 32px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .category:nth-child(2) { animation-delay: 0.05s; }
+  .category:nth-child(3) { animation-delay: 0.1s; }
+  .category:nth-child(4) { animation-delay: 0.15s; }
+  .category:nth-child(5) { animation-delay: 0.2s; }
+  .category-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .category-icon {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .category-title {
+    font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
+  }
+  .category-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  /* ── TOOL CARD ── */
+  .tool-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .tool-card:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .tool-card:hover::before { opacity: 1; }
+  .tool-card .card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .tool-card .tool-emoji {
+    font-size: 28px; margin-bottom: 12px;
+  }
+  .tool-card .tool-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding: 3px 8px;
+    border-radius: 20px; font-weight: 500;
+  }
+  .status-ready { background: var(--accent-green-dim); color: var(--accent-green); }
+  .status-wip { background: var(--accent-gold-dim); color: var(--accent-gold); }
+  .status-planned { background: var(--bg-input); color: var(--text-muted); }
+  .tool-card h3 {
+    font-size: 15px; font-weight: 600; margin-bottom: 6px;
+    color: var(--text-primary);
+  }
+  .tool-card p {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+  }
+  .tool-card .tool-tags {
+    margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .tool-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding: 3px 8px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--text-muted);
+  }
+
+  /* Category colour accents */
+  .cat-prep .category-icon { background: var(--accent-gold-dim); }
+  .cat-prep .tool-card::before { background: linear-gradient(90deg, var(--accent-gold), transparent); }
+  .cat-analysis .category-icon { background: var(--accent-blue-dim); }
+  .cat-analysis .tool-card::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
+  .cat-journal .category-icon { background: var(--accent-green-dim); }
+  .cat-journal .tool-card::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
+  .cat-risk .category-icon { background: var(--accent-red-dim); }
+  .cat-risk .tool-card::before { background: linear-gradient(90deg, var(--accent-red), transparent); }
+  .cat-learning .category-icon { background: var(--accent-purple-dim); }
+  .cat-learning .tool-card::before { background: linear-gradient(90deg, var(--accent-purple), transparent); }
+  .cat-utilities .category-icon { background: var(--accent-cyan-dim); }
+  .cat-utilities .tool-card::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); }
+
+  /* ── ADD TOOL CARD ── */
+  .add-card {
+    border: 2px dashed var(--border);
+    background: transparent;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 160px; cursor: pointer;
+    transition: all 0.25s;
+  }
+  .add-card:hover {
+    border-color: var(--accent-gold);
+    background: var(--accent-gold-dim);
+  }
+  .add-card .plus { font-size: 28px; color: var(--text-muted); margin-bottom: 6px; }
+  .add-card span { font-size: 13px; color: var(--text-muted); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 100; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+    width: 90%; max-width: 520px;
+    animation: fadeUp 0.3s ease;
+  }
+  .modal h2 {
+    font-size: 20px; font-weight: 700; margin-bottom: 20px;
+  }
+  .modal label {
+    display: block; font-size: 13px; font-weight: 500;
+    color: var(--text-secondary); margin-bottom: 6px; margin-top: 14px;
+  }
+  .modal input, .modal select, .modal textarea {
+    width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 14px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus {
+    border-color: var(--accent-gold);
+  }
+  .modal textarea { resize: vertical; min-height: 70px; }
+  .modal-actions {
+    margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;
+  }
+  .btn-cancel {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-secondary); padding: 10px 20px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 14px;
+  }
+  .btn-save {
+    background: var(--accent-gold); border: none;
+    color: var(--bg-primary); padding: 10px 24px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  }
+  .btn-save:hover { filter: brightness(1.1); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .header, .toolbar, .main { padding-left: 20px; padding-right: 20px; }
+    .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .tools-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <h1>⚡ Trading Toolkit</h1>
+    <p>Peter's Command Centre — NADRO / ES / MES</p>
+  </div>
+  <div class="header-right">
+    <div class="clock" id="clock"></div>
+    <button class="btn-settings" onclick="openModal('category')">+ Category</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <input class="search-box" type="text" placeholder="Search tools…" id="searchInput" oninput="filterTools()">
+  <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+  <button class="filter-btn" onclick="setFilter('ready', this)">Ready</button>
+  <button class="filter-btn" onclick="setFilter('wip', this)">WIP</button>
+  <button class="filter-btn" onclick="setFilter('planned', this)">Planned</button>
+</div>
+
+<main class="main" id="mainContent"></main>
+
+<!-- ADD / EDIT TOOL MODAL -->
+<div class="modal-overlay" id="toolModal">
+  <div class="modal">
+    <h2 id="modalTitle">Add New Tool</h2>
+    <label>Tool Name</label>
+    <input type="text" id="fName" placeholder="e.g. Market Prep Checklist">
+    <label>Description</label>
+    <textarea id="fDesc" placeholder="Short description of what this tool does"></textarea>
+    <label>Category</label>
+    <select id="fCat"></select>
+    <label>Status</label>
+    <select id="fStatus">
+      <option value="ready">Ready</option>
+      <option value="wip">Work in Progress</option>
+      <option value="planned">Planned</option>
+    </select>
+    <label>File / URL (optional)</label>
+    <input type="text" id="fLink" placeholder="e.g. tools/market-prep.html or https://...">
+    <label>Tags (comma separated)</label>
+    <input type="text" id="fTags" placeholder="e.g. sierra-chart, daily, nadro">
+    <label>Emoji Icon</label>
+    <input type="text" id="fEmoji" placeholder="e.g. 📊" maxlength="4">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('tool')">Cancel</button>
+      <button class="btn-save" onclick="saveTool()">Save Tool</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+<div class="modal-overlay" id="categoryModal">
+  <div class="modal">
+    <h2>Add New Category</h2>
+    <label>Category Name</label>
+    <input type="text" id="catName" placeholder="e.g. Backtesting">
+    <label>Emoji Icon</label>
+    <input type="text" id="catEmoji" placeholder="e.g. 🔬" maxlength="4">
+    <label>Accent Colour</label>
+    <select id="catColor">
+      <option value="gold">Gold</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+      <option value="red">Red</option>
+      <option value="purple">Purple</option>
+      <option value="cyan">Cyan</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('category')">Cancel</button>
+      <button class="btn-save" onclick="saveCategory()">Save Category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA STORE — Edit this section to add/remove tools & categories
+// Everything is saved to localStorage so changes persist in-browser
+// ═══════════════════════════════════════════════════════════════
+
+const DEFAULT_DATA = {
+  categories: [
+    { id: 'prep', name: 'Market Prep', emoji: '🎯', color: 'gold', cssClass: 'cat-prep' },
+    { id: 'analysis', name: 'Analysis & Order Flow', emoji: '📊', color: 'blue', cssClass: 'cat-analysis' },
+    { id: 'journal', name: 'Journaling & Review', emoji: '📓', color: 'green', cssClass: 'cat-journal' },
+    { id: 'risk', name: 'Risk & Position Sizing', emoji: '🛡️', color: 'red', cssClass: 'cat-risk' },
+    { id: 'learning', name: 'Learning & NADRO', emoji: '🧠', color: 'purple', cssClass: 'cat-learning' },
+    { id: 'utilities', name: 'Utilities & Lifestyle', emoji: '⚙️', color: 'cyan', cssClass: 'cat-utilities' },
+  ],
+  tools: [
+    // ── MARKET PREP ──
+    { id: 't1', cat: 'prep', name: 'Pre-Market Checklist', desc: 'Daily structured routine: overnight context, key levels, economic events, bias formation.', status: 'planned', link: '', tags: ['daily', 'routine'], emoji: '✅' },
+    { id: 't2', cat: 'prep', name: 'Key Levels Dashboard', desc: 'Auto-display of VAH, VAL, POC, VWAP, DVA levels from Sierra Chart exports.', status: 'planned', link: '', tags: ['sierra-chart', 'levels'], emoji: '📐' },
+    { id: 't3', cat: 'prep', name: 'Economic Calendar Widget', desc: 'Filtered view of high-impact events relevant to ES/MES.', status: 'planned', link: '', tags: ['macro', 'news'], emoji: '📅' },
+
+    // ── ANALYSIS ──
+    { id: 't4', cat: 'analysis', name: 'NADRO Setup Scanner', desc: 'Interactive tool to identify balance/imbalance, value area rotations, and NADRO setups.', status: 'planned', link: '', tags: ['nadro', 'setups'], emoji: '🔍' },
+    { id: 't5', cat: 'analysis', name: 'Multi-Timeframe Viewer', desc: 'Side-by-side TF analysis with annotations for context alignment.', status: 'planned', link: '', tags: ['mtf', 'context'], emoji: '🔭' },
+
+    // ── JOURNAL ──
+    { id: 't6', cat: 'journal', name: 'Trade Journal Entry', desc: 'Structured journal: setup, execution, outcome, screenshot, emotional state, NADRO stage rating.', status: 'planned', link: '', tags: ['notion', 'daily'], emoji: '📝' },
+    { id: 't7', cat: 'journal', name: 'Weekly Review Template', desc: 'Summarise wins, losses, patterns, NADRO progression, and goals for next week.', status: 'planned', link: '', tags: ['review', 'weekly'], emoji: '📋' },
+
+    // ── RISK ──
+    { id: 't8', cat: 'risk', name: 'Position Size Calculator', desc: 'Input account size, risk %, stop distance → outputs contracts for MES/ES.', status: 'planned', link: '', tags: ['risk', 'calculator'], emoji: '🧮' },
+    { id: 't9', cat: 'risk', name: 'Prop Firm Tracker', desc: 'Track Apteros & Apex challenge progress: daily P&L, drawdown, rules compliance.', status: 'planned', link: '', tags: ['apteros', 'apex', 'challenge'], emoji: '🏆' },
+
+    // ── LEARNING ──
+    { id: 't10', cat: 'learning', name: 'NADRO Stage Tracker', desc: 'Self-assessment tool: rate your understanding per concept, track progression through stages 1-7.', status: 'planned', link: '', tags: ['nadro', 'progress'], emoji: '🪜' },
+    { id: 't11', cat: 'learning', name: 'Concept Flashcards', desc: 'Interactive flashcards for NADRO concepts, value area rules, and order flow patterns.', status: 'planned', link: '', tags: ['study', 'flashcards'], emoji: '🃏' },
+
+    // ── UTILITIES ──
+    { id: 't12', cat: 'utilities', name: 'Session Time Converter', desc: 'London ↔ CME session times, with DST awareness.', status: 'ready', link: '', tags: ['time', 'sessions'], emoji: '🕐' },
+  ]
+};
+
+// ── PERSISTENCE ──
+function loadData() {
+  try {
+    const saved = localStorage.getItem('tradingToolkit');
+    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  } catch { return JSON.parse(JSON.stringify(DEFAULT_DATA)); }
+}
+function saveData(data) {
+  localStorage.setItem('tradingToolkit', JSON.stringify(data));
+}
+function resetData() {
+  if (confirm('Reset all tools & categories to defaults? This cannot be undone.')) {
+    localStorage.removeItem('tradingToolkit');
+    location.reload();
+  }
+}
+
+let DATA = loadData();
+let currentFilter = 'all';
+let editingToolId = null;
+
+// ── RENDER ──
+function render() {
+  const main = document.getElementById('mainContent');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let html = '';
+
+  DATA.categories.forEach(cat => {
+    let tools = DATA.tools.filter(t => t.cat === cat.id);
+    if (currentFilter !== 'all') tools = tools.filter(t => t.status === currentFilter);
+    if (search) tools = tools.filter(t =>
+      t.name.toLowerCase().includes(search) ||
+      t.desc.toLowerCase().includes(search) ||
+      t.tags.some(tag => tag.toLowerCase().includes(search))
+    );
+
+    const colorClass = `cat-${cat.id}`;
+    html += `<section class="category ${colorClass}">
+      <div class="category-header">
+        <div class="category-icon">${cat.emoji}</div>
+        <h2 class="category-title">${cat.name}</h2>
+        <span class="category-count">${tools.length}</span>
+      </div>
+      <div class="tools-grid">`;
+
+    tools.forEach(tool => {
+      const statusClass = tool.status === 'ready' ? 'status-ready' : tool.status === 'wip' ? 'status-wip' : 'status-planned';
+      const statusLabel = tool.status === 'ready' ? 'READY' : tool.status === 'wip' ? 'WIP' : 'PLANNED';
+      const isLink = tool.link && (tool.link.startsWith('http') || tool.link.endsWith('.html'));
+      const tag = isLink ? 'a' : 'div';
+      const href = isLink ? ` href="${tool.link}" target="_blank"` : '';
+
+      html += `<${tag} class="tool-card"${href} ondblclick="editTool('${tool.id}')">
+        <div class="card-top">
+          <div class="tool-emoji">${tool.emoji}</div>
+          <span class="tool-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <h3>${tool.name}</h3>
+        <p>${tool.desc}</p>
+        <div class="tool-tags">
+          ${tool.tags.map(t => `<span class="tool-tag">${t}</span>`).join('')}
+        </div>
+      </${tag}>`;
+    });
+
+    html += `<div class="tool-card add-card" onclick="openAddTool('${cat.id}')">
+        <div class="plus">+</div>
+        <span>Add tool</span>
+      </div>
+      </div></section>`;
+  });
+
+  main.innerHTML = html;
+  updateCategorySelect();
+}
+
+// ── FILTERS ──
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function filterTools() { render(); }
+
+// ── MODALS ──
+function openModal(type) {
+  document.getElementById(type + 'Modal').classList.add('open');
+}
+function closeModal(type) {
+  document.getElementById(type + 'Modal').classList.remove('open');
+  editingToolId = null;
+}
+
+function openAddTool(catId) {
+  editingToolId = null;
+  document.getElementById('modalTitle').textContent = 'Add New Tool';
+  document.getElementById('fName').value = '';
+  document.getElementById('fDesc').value = '';
+  document.getElementById('fStatus').value = 'planned';
+  document.getElementById('fLink').value = '';
+  document.getElementById('fTags').value = '';
+  document.getElementById('fEmoji').value = '🔧';
+  updateCategorySelect();
+  document.getElementById('fCat').value = catId;
+  openModal('tool');
+}
+
+function editTool(id) {
+  const tool = DATA.tools.find(t => t.id === id);
+  if (!tool) return;
+  editingToolId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Tool';
+  document.getElementById('fName').value = tool.name;
+  document.getElementById('fDesc').value = tool.desc;
+  document.getElementById('fStatus').value = tool.status;
+  document.getElementById('fLink').value = tool.link || '';
+  document.getElementById('fTags').value = tool.tags.join(', ');
+  document.getElementById('fEmoji').value = tool.emoji;
+  updateCategorySelect();
+  document.getElementById('fCat').value = tool.cat;
+  openModal('tool');
+}
+
+function saveTool() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) return alert('Name is required');
+  const toolData = {
+    cat: document.getElementById('fCat').value,
+    name,
+    desc: document.getElementById('fDesc').value.trim(),
+    status: document.getElementById('fStatus').value,
+    link: document.getElementById('fLink').value.trim(),
+    tags: document.getElementById('fTags').value.split(',').map(t => t.trim()).filter(Boolean),
+    emoji: document.getElementById('fEmoji').value || '🔧',
+  };
+
+  if (editingToolId) {
+    const idx = DATA.tools.findIndex(t => t.id === editingToolId);
+    if (idx >= 0) DATA.tools[idx] = { ...DATA.tools[idx], ...toolData };
+  } else {
+    toolData.id = 't' + Date.now();
+    DATA.tools.push(toolData);
+  }
+
+  saveData(DATA);
+  closeModal('tool');
+  render();
+}
+
+function saveCategory() {
+  const name = document.getElementById('catName').value.trim();
+  if (!name) return alert('Name is required');
+  const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const color = document.getElementById('catColor').value;
+  DATA.categories.push({
+    id,
+    name,
+    emoji: document.getElementById('catEmoji').value || '📁',
+    color,
+    cssClass: `cat-${id}`,
+  });
+  saveData(DATA);
+  closeModal('category');
+  render();
+  // Inject dynamic colour class
+  const style = document.createElement('style');
+  const accent = `var(--accent-${color})`;
+  const accentDim = `var(--accent-${color}-dim)`;
+  style.textContent = `.cat-${id} .category-icon { background: ${accentDim}; } .cat-${id} .tool-card::before { background: linear-gradient(90deg, ${accent}, transparent); }`;
+  document.head.appendChild(style);
+}
+
+function updateCategorySelect() {
+  const sel = document.getElementById('fCat');
+  sel.innerHTML = DATA.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+}
+
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const london = now.toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const chicago = now.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit', hour12: false });
+  document.getElementById('clock').textContent = `🇬🇧 ${london}  ·  🇺🇸 ${chicago} CT`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>

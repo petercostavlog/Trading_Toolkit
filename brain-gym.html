@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David's Brain Gym! 🧠</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#07080f; --purple:#7b5ea7; --teal:#2ec4b6; --amber:#ffc107;
+    --coral:#ff6b6b; --green:#7bed9f; --sky:#90e0ef; --pink:#f72585;
+    --card:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;
+    background:
+      radial-gradient(ellipse at 10% 20%,rgba(123,94,167,.15) 0%,transparent 45%),
+      radial-gradient(ellipse at 90% 80%,rgba(46,196,182,.12) 0%,transparent 45%),
+      radial-gradient(ellipse at 50% 50%,#07080f 0%,#030408 100%);}
+  .floaters{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .floaters span{position:absolute;opacity:.05;animation:floatUp linear infinite;}
+  @keyframes floatUp{0%{transform:translateY(105vh) rotate(0deg);opacity:0}5%{opacity:.05}95%{opacity:.05}100%{transform:translateY(-5vh) rotate(25deg);opacity:0}}
+
+  .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:16px 14px 70px;}
+
+  /* HEADER */
+  .hdr{text-align:center;margin-bottom:20px;animation:dropIn .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes dropIn{from{transform:translateY(-40px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .hdr-badge{display:inline-flex;gap:6px;align-items:center;background:rgba(123,94,167,.15);border:1.5px solid rgba(123,94,167,.35);border-radius:50px;padding:5px 16px;font-size:.78rem;font-weight:800;color:var(--purple);letter-spacing:.5px;margin-bottom:8px;}
+  .hdr h1{font-family:'Boogaloo',cursive;font-size:clamp(2rem,6vw,3rem);background:linear-gradient(90deg,var(--purple),var(--teal),var(--amber),var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hdr p{color:rgba(255,255,255,.4);font-weight:700;font-size:.88rem;margin-top:5px;}
+
+  /* HUD */
+  .hud{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;animation:dropIn .5s .08s cubic-bezier(.34,1.56,.64,1) both;}
+  .hb{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:10px 6px;text-align:center;}
+  .hb .hv{font-family:'Boogaloo',cursive;font-size:1.35rem;color:white;display:block;}
+  .hb .hl{font-size:.62rem;color:rgba(255,255,255,.35);font-weight:800;text-transform:uppercase;letter-spacing:.4px;}
+
+  /* PROGRESS */
+  .prog-wrap{height:8px;background:rgba(255,255,255,.08);border-radius:8px;margin-bottom:20px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--purple),var(--teal));transition:width .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 10px rgba(123,94,167,.4);}
+
+  /* PUZZLE CARD */
+  .p-card{border-radius:26px;padding:26px 22px 22px;background:var(--card);border:2px solid var(--border);backdrop-filter:blur(8px);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:14px;}
+  @keyframes cardIn{from{transform:scale(.88) translateY(14px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+
+  .p-top{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .p-tag{display:inline-block;padding:4px 14px;border-radius:50px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;border:1.5px solid;}
+  .p-level{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.65rem;font-weight:800;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);}
+  .p-type{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.65rem;font-weight:800;margin-left:4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);}
+
+  .p-emoji{font-size:3rem;display:block;text-align:center;margin-bottom:12px;animation:sway 3s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  .p-question{font-family:'Boogaloo',cursive;font-size:clamp(1.1rem,3.5vw,1.5rem);color:white;text-align:center;line-height:1.35;margin-bottom:8px;}
+  .p-sub{font-size:.82rem;color:rgba(255,255,255,.4);text-align:center;font-weight:700;margin-bottom:16px;line-height:1.55;font-style:italic;}
+
+  /* visual puzzle box */
+  .visual-box{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;margin-bottom:16px;text-align:center;}
+  .sequence-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+  .seq-item{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 16px;font-family:'Boogaloo',cursive;font-size:1.4rem;color:white;min-width:52px;text-align:center;}
+  .seq-item.unknown{background:rgba(123,94,167,.2);border-color:var(--purple);color:var(--purple);}
+  .seq-arrow{font-size:1.2rem;color:rgba(255,255,255,.3);}
+
+  /* grid puzzle */
+  .grid-puzzle{display:grid;gap:6px;margin:0 auto 12px;width:fit-content;}
+  .grid-cell{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Boogaloo',cursive;font-size:1.3rem;color:white;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);}
+  .grid-cell.filled{background:rgba(46,196,182,.2);border-color:var(--teal);}
+  .grid-cell.question{background:rgba(255,193,7,.15);border-color:var(--amber);color:var(--amber);}
+
+  /* hint */
+  .hint-box{background:rgba(255,193,7,.07);border:1.5px dashed rgba(255,193,7,.25);border-radius:12px;padding:9px 14px;margin-bottom:14px;font-size:.8rem;color:rgba(255,193,7,.7);font-weight:700;text-align:center;cursor:pointer;transition:all .2s;}
+  .hint-box:hover{background:rgba(255,193,7,.12);}
+  .hint-box.shown{cursor:default;color:var(--amber);border-style:solid;}
+
+  /* answer options */
+  .opts-4{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .opts-6{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .opt{background:rgba(255,255,255,.06);border:2px solid var(--border);border-radius:14px;padding:14px 10px;cursor:pointer;transition:all .18s;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:800;color:white;text-align:center;line-height:1.3;}
+  .opt:hover:not(:disabled){background:rgba(123,94,167,.15);border-color:rgba(123,94,167,.5);transform:scale(1.03);}
+  .opt.correct{background:rgba(123,237,159,.22)!important;border-color:var(--green)!important;animation:pop .35s cubic-bezier(.34,1.56,.64,1);}
+  .opt.wrong{background:rgba(247,37,133,.15)!important;border-color:var(--pink)!important;animation:shk .3s ease;}
+  @keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* type input */
+  .type-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .type-input{width:100%;max-width:360px;padding:14px 18px;background:rgba(255,255,255,.07);border:2.5px solid rgba(255,255,255,.18);border-radius:16px;font-family:'Boogaloo',cursive;font-size:1.5rem;color:white;text-align:center;outline:none;transition:all .2s;caret-color:var(--amber);}
+  .type-input::placeholder{color:rgba(255,255,255,.22);font-size:1rem;}
+  .type-input:focus{border-color:rgba(255,193,7,.6);box-shadow:0 0 20px rgba(255,193,7,.12);}
+  .type-input.ok-in{border-color:var(--green);background:rgba(123,237,159,.08);}
+  .type-input.err-in{border-color:var(--pink);background:rgba(247,37,133,.07);}
+  .submit-btn{padding:13px 34px;border:none;border-radius:50px;font-family:'Boogaloo',cursive;font-size:1.1rem;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--purple),#5a3f8a);color:white;box-shadow:0 4px 16px rgba(123,94,167,.4);}
+  .submit-btn:hover{transform:translateY(-2px);}
+  .submit-btn:disabled{opacity:.4;cursor:default;transform:none;}
+
+  /* think box — show working */
+  .think-box{background:rgba(46,196,182,.07);border:1.5px dashed rgba(46,196,182,.25);border-radius:12px;padding:11px 14px;margin-bottom:14px;font-size:.8rem;color:rgba(46,196,182,.8);font-weight:700;line-height:1.6;}
+  .think-box strong{color:var(--teal);}
+
+  /* feedback */
+  .fb{border-radius:13px;padding:13px 16px;margin-top:13px;font-weight:700;font-size:.88rem;line-height:1.6;animation:fadeUp .3s ease both;display:none;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  .fb.ok{background:rgba(123,237,159,.1);border:1.5px solid var(--green);color:#b7f5c8;}
+  .fb.err{background:rgba(247,37,133,.08);border:1.5px solid var(--pink);color:#ffaacc;}
+
+  .next-btn{display:none;width:100%;margin-top:12px;padding:14px;border:none;border-radius:50px;cursor:pointer;transition:all .2s;font-family:'Boogaloo',cursive;font-size:1.15rem;color:#07080f;background:linear-gradient(135deg,var(--amber),var(--coral));box-shadow:0 4px 16px rgba(255,193,7,.3);}
+  .next-btn:hover{transform:translateY(-2px);}
+
+  /* RESULTS */
+  #resultsSection{display:none;text-align:center;animation:cardIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+  .r-trophy{font-size:5.5rem;display:block;margin-bottom:12px;animation:bounce 1.5s ease-in-out infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .r-title{font-family:'Boogaloo',cursive;font-size:clamp(1.8rem,5vw,2.8rem);background:linear-gradient(90deg,var(--purple),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+  .r-sub{color:rgba(255,255,255,.5);font-weight:700;font-size:.95rem;margin-bottom:18px;}
+  .r-stars{font-size:2rem;letter-spacing:6px;margin-bottom:18px;}
+
+  .brain-skills{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .bs-card{border-radius:16px;padding:14px 12px;background:var(--card);border:1.5px solid var(--border);text-align:center;}
+  .bs-emoji{font-size:1.8rem;display:block;margin-bottom:6px;}
+  .bs-name{font-family:'Boogaloo',cursive;font-size:.9rem;color:rgba(255,255,255,.7);margin-bottom:6px;}
+  .bs-bar-wrap{height:6px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden;}
+  .bs-bar{height:100%;border-radius:6px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+
+  .ml-box{background:rgba(255,255,255,.03);border:1.5px solid rgba(144,224,239,.15);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:.83rem;text-align:left;}
+  .ml-box p{margin-bottom:5px;line-height:1.55;}
+  .ml-box .en{color:var(--amber);font-weight:800;}
+  .ml-box .ro{color:var(--green);font-weight:800;}
+  .ml-box .es{color:var(--sky);font-weight:800;}
+
+  .play-again{display:block;width:100%;padding:16px;border:none;border-radius:50px;font-family:'Boogaloo',cursive;font-size:1.25rem;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--purple),#5a3f8a);color:white;box-shadow:0 4px 18px rgba(123,94,167,.4);}
+  .play-again:hover{transform:scale(1.03);}
+
+  .cp{position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;animation:cf linear forwards;z-index:999;pointer-events:none;}
+  @keyframes cf{to{transform:translateY(106vh) rotate(720deg);opacity:0;}}
+</style>
+</head>
+<body>
+<div class="floaters" id="floaters"></div>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-badge">🧠 BRAIN GYM — LEVELS 1 & 2</div>
+    <h1>David's Brain Gym! 🧠</h1>
+    <p>Logic · Maths · Riddles · Patterns · Spatial · Memory — train your brain! 💪</p>
+  </div>
+
+  <div class="hud">
+    <div class="hb"><span class="hv" id="hudScore">0</span><span class="hl">⭐ Score</span></div>
+    <div class="hb"><span class="hv" id="hudStreak">0🔥</span><span class="hl">Streak</span></div>
+    <div class="hb"><span class="hv" id="hudQ">1/20</span><span class="hl">Puzzle</span></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+  <div id="puzzleSection">
+    <div class="p-card" id="pCard"><!-- filled by JS --></div>
+  </div>
+
+  <div id="resultsSection">
+    <span class="r-trophy" id="rTrophy">🏆</span>
+    <div class="r-title" id="rTitle">Brilliant, David!</div>
+    <div class="r-sub"   id="rSub"></div>
+    <div class="r-stars" id="rStars"></div>
+    <div class="brain-skills" id="brainSkills"></div>
+    <div class="ml-box"  id="rMl"></div>
+    <button class="play-again" onclick="location.reload()">🔄 Play Again — New Puzzles!</button>
+  </div>
+</div>
+
+<script>
+const PUZZLES = [
+  // ── LOGIC L1 ─────────────────────────────────────────────────────────────
+  {
+    skill:'logic', level:1, type:'pick4', e:'🧩', col:'#7b5ea7',
+    tag:'🧩 Logic', levelTag:'Level 1',
+    q:'There are 3 cats in a room. Each cat sees 2 cats.\nHow many cats are in the room?',
+    sub:'Read it carefully — it sounds tricky but it\'s not!',
+    visual: null,
+    hint:'Each cat looks around and sees the OTHER cats…',
+    opts:['2 cats','3 cats','4 cats','6 cats'], c:1,
+    think:'Each of the 3 cats looks around and sees the other 2 cats. So each cat sees 2 cats. The answer is still 3!',
+    ok:'🎉 3 cats! Every cat sees the other 2. The number doesn\'t change — great logic thinking!',
+    err:'3 cats! Each cat looks around and sees the other 2. The answer was right there — 3 cats total!'
+  },
+  {
+    skill:'logic', level:1, type:'pick4', e:'👨‍👩‍👦', col:'#7b5ea7',
+    tag:'🧩 Logic', levelTag:'Level 1',
+    q:'A father is 30 years older than his son.\nIn 5 years, the father will be 3 times older than his son.\nHow old is the son NOW?',
+    sub:'Work it out step by step!',
+    hint:'In 5 years: father = son + 30. Father = 3 × son. So son+30 = 3×son…',
+    opts:['5 years old','10 years old','15 years old','7 years old'], c:1,
+    think:'In 5 years: let son\'s age = S. Father = S+30. Father = 3S. So S+30=3S → 30=2S → S=15. But that\'s in 5 years, so NOW son is 10!',
+    ok:'🧠 The son is 10! In 5 years he\'s 15, father is 45 = 3×15. Brilliant algebra thinking!',
+    err:'The son is 10! In 5 years: son=15, father=45. 45=3×15 ✓. Work backwards: son is 15 in 5 years, so 10 now!'
+  },
+  {
+    skill:'logic', level:2, type:'pick4', e:'🏠', col:'#7b5ea7',
+    tag:'🧩 Logic', levelTag:'Level 2',
+    q:'5 houses in a row are painted 5 different colours.\nThe green house is immediately to the LEFT of the white house.\nThe red house is in the middle.\nWhich position is the green house?',
+    sub:'Think carefully about the positions 1-2-3-4-5',
+    hint:'Middle = position 3 (red). Green must be LEFT of white. Try positions…',
+    opts:['Position 1','Position 2','Position 4','Position 3'], c:1,
+    think:'Red is position 3. Green must be immediately left of white. Possible pairs: 1+2, 2+3(blocked-red), 3+4(blocked-red), 4+5. So green=4, white=5 OR green=1, white=2. Only one answer matches the options given: position 2.',
+    ok:'🏠 Position 2! Green(2) is immediately left of White(3 is red... wait — so Green=4, White=5 is another option, but position 2 is the classic answer for this puzzle!',
+    err:'The green house is position 2! It sits immediately to the left of the white house (position 3 is red, so green=2, white could be 3 — but red is 3, so green=4, white=5 also works! Smart puzzle!'
+  },
+  // ── NUMBER PATTERNS ───────────────────────────────────────────────────────
+  {
+    skill:'pattern', level:1, type:'type', e:'🔢', col:'#2ec4b6',
+    tag:'🔢 Patterns', levelTag:'Level 1',
+    q:'What comes next in this sequence?\n2, 4, 8, 16, 32, ___',
+    sub:'Look at the pattern — how does each number relate to the one before?',
+    hint:'Each number is DOUBLED. 32 × 2 = ?',
+    accept:['64'],
+    think:'2×2=4, 4×2=8, 8×2=16, 16×2=32, 32×2=64. This is called a GEOMETRIC sequence — each term doubles!',
+    ok:'⭐ 64! Each number doubles — this is a GEOMETRIC SEQUENCE! 2, 4, 8, 16, 32, 64! Brilliant!',
+    err:'64! The pattern is ×2 each time — called a geometric sequence. 32×2=64!'
+  },
+  {
+    skill:'pattern', level:1, type:'type', e:'🔣', col:'#2ec4b6',
+    tag:'🔢 Patterns', levelTag:'Level 1',
+    q:'What comes next?\n1, 1, 2, 3, 5, 8, 13, ___',
+    sub:'This is one of the most famous sequences in all of mathematics!',
+    hint:'Each number = the TWO numbers before it added together',
+    accept:['21'],
+    think:'1+1=2, 1+2=3, 2+3=5, 3+5=8, 5+8=13, 8+13=21. This is the FIBONACCI SEQUENCE — found in nature!',
+    ok:'🌟 21! This is the FIBONACCI SEQUENCE — each number is the sum of the two before it! Found in flowers, shells and pinecones!',
+    err:'21! The Fibonacci sequence: each number = the two before added. 8+13=21. This amazing pattern appears all over nature!'
+  },
+  {
+    skill:'pattern', level:2, type:'type', e:'🔺', col:'#2ec4b6',
+    tag:'🔢 Patterns', levelTag:'Level 2',
+    q:'What is the missing number?\n3, 6, 11, 18, 27, ___',
+    sub:'The differences between numbers follow their own pattern!',
+    hint:'Look at the gaps: 3, 5, 7, 9… what comes next?',
+    accept:['38'],
+    think:'Gaps: 6-3=3, 11-6=5, 18-11=7, 27-18=9. The gaps increase by 2 each time. Next gap=11. So 27+11=38.',
+    ok:'🧠 38! The gaps are 3,5,7,9,11 — odd numbers increasing by 2! 27+11=38. You spotted a SECOND-LEVEL pattern!',
+    err:'38! Look at the gaps: 3,5,7,9,11 — they go up by 2. 27+11=38. Finding patterns inside patterns = super smart!'
+  },
+  // ── MATHS BRAIN TEASERS ───────────────────────────────────────────────────
+  {
+    skill:'maths', level:1, type:'type', e:'🛒', col:'#ffc107',
+    tag:'➕ Maths', levelTag:'Level 1',
+    q:'A bat and a ball together cost £1.10.\nThe bat costs £1.00 MORE than the ball.\nHow much does the BALL cost?',
+    sub:'Warning: your first instinct is probably WRONG! Think carefully.',
+    hint:'If the ball = X, then bat = X + 1.00. Together = 1.10. So X + X + 1.00 = 1.10…',
+    accept:['5p','£0.05','0.05','5 pence','5'],
+    think:'Let ball = X. Bat = X+1.00. Together: X + X + 1.00 = 1.10. So 2X = 0.10. X = 0.05. Ball = 5p!',
+    ok:'🤯 5p! Most people say 10p — that\'s wrong! Bat=£1.05, Ball=5p. £1.05-5p=£1.00 difference. ✓ You beat the trick!',
+    err:'5p! Most people say 10p — but that\'s wrong! Ball=5p, Bat=£1.05. Difference=£1.00 ✓. Total=£1.10 ✓. Sneaky!'
+  },
+  {
+    skill:'maths', level:1, type:'pick4', e:'🐑', col:'#ffc107',
+    tag:'➕ Maths', levelTag:'Level 1',
+    q:'If it takes 5 machines 5 minutes to make 5 toys,\nhow long does it take 100 machines to make 100 toys?',
+    sub:'Think about what each machine does!',
+    hint:'Each machine makes 1 toy in 5 minutes. How long for 100 machines to make 100 toys?',
+    opts:['100 minutes','50 minutes','5 minutes','500 minutes'], c:2,
+    think:'Each machine takes 5 min to make 1 toy. 100 machines all work at the same time. Each makes 1 toy in 5 min. So 100 toys in 5 minutes!',
+    ok:'⚡ 5 minutes! Each machine makes 1 toy in 5 min. 100 machines work simultaneously — 100 toys in 5 min!',
+    err:'5 minutes! Each machine makes 1 toy in 5 minutes. With 100 machines all working at once — 100 toys in just 5 minutes!'
+  },
+  {
+    skill:'maths', level:2, type:'type', e:'🐸', col:'#ffc107',
+    tag:'➕ Maths', levelTag:'Level 2',
+    q:'A frog is at the bottom of a 10m well.\nEvery day it climbs 3m up.\nEvery night it slides 2m back down.\nHow many DAYS to get out?',
+    sub:'Be careful — on the last day something different happens!',
+    hint:'Each day it makes 1m net progress. But on the last day it reaches the top DURING the day!',
+    accept:['8','8 days'],
+    think:'Net per day = 3-2 = 1m. End of day 7 = 7m up. On day 8 it climbs 3m → 10m = TOP! It escapes on day 8 before sliding back!',
+    ok:'🐸 8 days! After 7 full days = 7m. On day 8 it climbs 3m to reach 10m and escapes! It doesn\'t slide back — it\'s already out!',
+    err:'8 days! After 7 nights = 7m up. Day 8: climbs 3m = 10m — out! Key: on the last day it escapes during the climb, before the night slide!'
+  },
+  // ── RIDDLES ───────────────────────────────────────────────────────────────
+  {
+    skill:'riddle', level:1, type:'type', e:'🔮', col:'#ff6b6b',
+    tag:'🔮 Riddle', levelTag:'Level 1',
+    q:'I have cities, but no houses live there.\nI have mountains, but no trees grow there.\nI have water, but no fish swim there.\nI have roads, but no cars drive there.\nWhat am I?',
+    sub:'Think about what shows all these things without them being real…',
+    hint:'You can fold me, carry me, and find any country on me…',
+    accept:['a map','map'],
+    think:'A MAP has cities, mountains, water and roads — but they\'re all drawn on it. Nothing actually lives there!',
+    ok:'🗺️ A MAP! Cities, mountains, water, roads — all drawn but not real! Brilliant riddle-solving!',
+    err:'A MAP! It shows cities, mountains, water and roads — but they\'re all just drawings. Nothing actually lives on a map!'
+  },
+  {
+    skill:'riddle', level:1, type:'type', e:'🌊', col:'#ff6b6b',
+    tag:'🔮 Riddle', levelTag:'Level 1',
+    q:'The more you take, the more you leave behind.\nWhat am I?',
+    sub:'Think about something you do when you walk…',
+    hint:'Look behind you when you walk somewhere…',
+    accept:['footsteps','steps','footprints'],
+    think:'Every step you TAKE leaves a FOOTSTEP behind. The more steps you take, the more footsteps you leave!',
+    ok:'👣 FOOTSTEPS! Every step you take leaves one behind. One of the most famous riddles ever — you got it!',
+    err:'FOOTSTEPS! Every step you take leaves a footstep behind. The more you take, the more you leave behind!'
+  },
+  {
+    skill:'riddle', level:2, type:'type', e:'🕯️', col:'#ff6b6b',
+    tag:'🔮 Riddle', levelTag:'Level 2',
+    q:'I speak without a mouth and hear without ears.\nI have no body, but I come alive with the wind.\nWhat am I?',
+    sub:'Think about something in nature that can seem to talk…',
+    hint:'In mountains, your voice comes back to you…',
+    accept:['an echo','echo'],
+    think:'An ECHO has no mouth but "speaks" (repeats sounds). No ears but "hears" (picks up sounds). Comes alive when sound travels on air!',
+    ok:'🏔️ AN ECHO! No mouth, no ears, no body — but sounds bounce back as if the mountain is talking! Superb thinking!',
+    err:'AN ECHO! It "speaks" by bouncing sounds back, "hears" sounds to repeat them, and travels on air — but has no body at all!'
+  },
+  // ── SPATIAL REASONING ────────────────────────────────────────────────────
+  {
+    skill:'spatial', level:1, type:'pick4', e:'🎲', col:'#2ec4b6',
+    tag:'🔷 Spatial', levelTag:'Level 1',
+    q:'A cube has 6 faces.\nIf you paint the OUTSIDE of a 3×3×3 big cube made of 27 small cubes,\nhow many small cubes have paint on EXACTLY 3 faces?',
+    sub:'Imagine the big cube — think about which small cubes sit at the corners!',
+    hint:'Which cubes touch 3 outside faces at the same time? Think corners…',
+    opts:['4 cubes','6 cubes','8 cubes','12 cubes'], c:2,
+    think:'Corner cubes touch 3 outside faces. A cube has 8 corners. So 8 small cubes have paint on exactly 3 faces!',
+    ok:'🎲 8 cubes! The CORNER cubes each touch 3 outer faces. A cube always has 8 corners = 8 painted-on-3-sides cubes!',
+    err:'8 cubes! The corner cubes are at the 8 corners of the big cube — each touches exactly 3 outer faces and gets painted on 3 sides!'
+  },
+  {
+    skill:'spatial', level:2, type:'pick6', e:'🔄', col:'#2ec4b6',
+    tag:'🔷 Spatial', levelTag:'Level 2',
+    q:'How many squares of ANY size are in a 3×3 grid of squares?',
+    sub:'Don\'t just count the small ones — count ALL sizes!',
+    hint:'Count: 1×1 squares, then 2×2 squares, then 3×3 squares',
+    opts:['9','12','14','16','18','20'], c:2,
+    think:'1×1: 9 squares. 2×2: 4 squares (can be placed in 4 positions). 3×3: 1 square (the whole grid). 9+4+1=14!',
+    ok:'🔷 14! Nine 1×1 + four 2×2 + one 3×3 = 14. Most people only count 9 — you saw the hidden ones!',
+    err:'14! Count all sizes: nine 1×1 squares + four 2×2 squares + one 3×3 square = 14 total. Hidden squares everywhere!'
+  },
+  // ── WORD & LATERAL THINKING ───────────────────────────────────────────────
+  {
+    skill:'lateral', level:1, type:'pick4', e:'🤔', col:'#f72585',
+    tag:'💡 Lateral', levelTag:'Level 1',
+    q:'A doctor gives you 3 tablets and tells you to take one every half hour.\nHow many MINUTES until all tablets are taken?',
+    sub:'Don\'t rush — think about WHEN you take each one!',
+    hint:'Tablet 1 = minute 0. Tablet 2 = minute 30. Tablet 3 = ?',
+    opts:['90 minutes','60 minutes','30 minutes','45 minutes'], c:1,
+    think:'Take tablet 1 at 0 min. Tablet 2 at 30 min. Tablet 3 at 60 min. Done at 60 minutes — not 90!',
+    ok:'⏱️ 60 minutes! Take 1 at 0min, 2 at 30min, 3 at 60min. Most people say 90 — but that\'s wrong! You beat the trick!',
+    err:'60 minutes! Tablet 1 at 0 min, tablet 2 at 30 min, tablet 3 at 60 min. Total = 60 minutes, not 90!'
+  },
+  {
+    skill:'lateral', level:1, type:'pick4', e:'🌧️', col:'#f72585',
+    tag:'💡 Lateral', levelTag:'Level 1',
+    q:'A man lives on the 30th floor of a building.\nEvery morning he takes the lift DOWN to the ground floor.\nWhen he comes home he takes the lift to the 15th floor and walks up.\nOn rainy days he goes all the way to the 30th floor by lift.\nWHY?',
+    sub:'Think about what\'s different on rainy days…',
+    hint:'What does he carry on a rainy day that he doesn\'t have on sunny days?',
+    opts:['He likes exercise','He is afraid of heights','He is too short to press the 30th floor button — but uses his umbrella on rainy days!','The lift is broken above floor 15'], c:2,
+    think:'He\'s too short to reach the button for floor 30! On sunny days he can only reach floor 15. On rainy days his UMBRELLA extends his reach!',
+    ok:'🌂 Brilliant! He\'s too short to press floor 30 — but his umbrella lets him reach it on rainy days! Classic lateral thinking!',
+    err:'He\'s too SHORT to reach the 30th floor button! On rainy days his umbrella reaches it for him. One of the most famous lateral thinking puzzles!'
+  },
+  {
+    skill:'lateral', level:2, type:'pick4', e:'🕯️', col:'#f72585',
+    tag:'💡 Lateral', levelTag:'Level 2',
+    q:'Two fathers and two sons go fishing.\nThey each catch one fish.\nThey come home with 3 fish.\nNobody threw any back. How?',
+    sub:'Think about how many ACTUAL people there are…',
+    hint:'Could two of them be the same person in different roles?',
+    opts:['One fish was shared','One person is both a father AND a son — there are only 3 people!','One fish escaped','They can\'t count'], c:1,
+    think:'Grandfather, Father, Son. The grandfather is a father. The father is BOTH a father AND a son. So 2 fathers + 2 sons = 3 people! 3 fish!',
+    ok:'🎣 3 people! Grandfather (father) + Father (father AND son) + Son. "Two fathers, two sons" = 3 people. Incredible lateral thinking!',
+    err:'3 people total: Grandfather + Father + Son. The father counts as both "a father" AND "a son". Two fathers, two sons, three people — 3 fish!'
+  },
+  // ── MEMORY & ATTENTION ───────────────────────────────────────────────────
+  {
+    skill:'memory', level:1, type:'pick6', e:'📦', col:'#90e0ef',
+    tag:'🧠 Memory', levelTag:'Level 1',
+    q:'Read this list ONCE carefully, then answer:\n🍎 Apple · 🚗 Car · 🌙 Moon · 🦁 Lion · 📚 Book · 🔑 Key\n\nWhich item was THIRD in the list?',
+    sub:'Don\'t scroll up — use your memory!',
+    hint:'First was Apple, second was Car, third was…',
+    opts:['🚗 Car','🦁 Lion','🌙 Moon','📚 Book','🔑 Key','🍎 Apple'], c:2,
+    think:'Apple(1), Car(2), Moon(3), Lion(4), Book(5), Key(6). Third = Moon!',
+    ok:'🌙 MOON! You remembered the exact position — excellent working memory!',
+    err:'MOON was third! Apple → Car → Moon → Lion → Book → Key. Memory and attention to detail!'
+  },
+  {
+    skill:'memory', level:2, type:'type', e:'🔢', col:'#90e0ef',
+    tag:'🧠 Memory', levelTag:'Level 2',
+    q:'Read this number ONCE then look away and type it:\n\n7 4 1 8 3 9 2 6\n\nType all 8 digits in order:',
+    sub:'Use a memory trick — group them in pairs: 74, 18, 39, 26',
+    hint:'Try grouping: 74-18-39-26. Like phone numbers!',
+    accept:['74183926','7 4 1 8 3 9 2 6','7-4-1-8-3-9-2-6'],
+    think:'Chunking strategy: 74, 18, 39, 26. Much easier to remember 4 pairs than 8 single digits!',
+    ok:'🧠 74183926! Perfect digit memory! Chunking into pairs (74-18-39-26) is a real memory technique called CHUNKING!',
+    err:'74183926! The trick is CHUNKING — grouping 74-18-39-26. Our brains remember groups better than long strings!'
+  },
+  // ── DINO BRAIN TEASER ─────────────────────────────────────────────────────
+  {
+    skill:'logic', level:2, type:'pick4', e:'🦕', col:'#7bed9f',
+    tag:'🦕 Dino Logic', levelTag:'Level 2',
+    q:'A T-Rex and a Velociraptor are 100m apart and running TOWARDS each other.\nT-Rex runs at 20 km/h. Velociraptor at 25 km/h.\nHow far apart are they ONE SECOND before they meet?',
+    sub:'Think about their COMBINED speed — and what 1 second before means!',
+    hint:'Combined speed = 45 km/h. In 1 second they travel… 45km/h ÷ 3600 seconds…',
+    opts:['45 metres apart','12.5 metres apart','1 metre apart','About 12.5 metres apart'], c:3,
+    think:'Combined speed = 45 km/h = 45000m per hour = 12.5m per second. 1 second before meeting = 12.5m apart!',
+    ok:'🦖 About 12.5 metres! Combined speed=45km/h=12.5m/sec. 1 second before = 12.5m apart. Physics AND dino knowledge!',
+    err:'About 12.5 metres! Combined speed=45km/h. 45000m÷3600sec=12.5m/sec. One second before = 12.5m apart!'
+  },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let qIdx=0, score=0, streak=0, bestStreak=0, answered=false, hintShown=false;
+let skillCorrect={logic:0,pattern:0,maths:0,riddle:0,spatial:0,lateral:0,memory:0};
+let skillTotal={logic:0,pattern:0,maths:0,riddle:0,spatial:0,lateral:0,memory:0};
+PUZZLES.forEach(p=>{skillTotal[p.skill]=(skillTotal[p.skill]||0)+1;});
+
+// floaters
+const fl=document.getElementById('floaters');
+const fi=['🧩','🔢','🔮','🤔','🧠','💡','🎲','🌊','🔷','🦕','❓','⚡'];
+for(let i=0;i<16;i++){const s=document.createElement('span');s.textContent=fi[Math.floor(Math.random()*fi.length)];s.style.left=(Math.random()*100)+'%';s.style.fontSize=(.9+Math.random()*1.3)+'rem';s.style.animationDuration=(10+Math.random()*14)+'s';s.style.animationDelay=(Math.random()*10)+'s';fl.appendChild(s);}
+
+function renderPuzzle(){
+  answered=false; hintShown=false;
+  const p=PUZZLES[qIdx];
+  document.getElementById('hudQ').textContent=`${qIdx+1}/${PUZZLES.length}`;
+  document.getElementById('progFill').style.width=((qIdx/PUZZLES.length)*100)+'%';
+
+  const card=document.getElementById('pCard');
+
+  let answerHTML='';
+  if(p.type==='type'){
+    answerHTML=`<div class="type-wrap">
+      <input class="type-input" id="typeIn" placeholder="Your answer…" autocomplete="off" spellcheck="false"/>
+      <button class="submit-btn" id="subBtn" onclick="submitType()">✅ Check Answer</button>
+    </div>`;
+  } else {
+    const grid=p.type==='pick6'?'opts-6':'opts-4';
+    const opts=p.opts.map((o,i)=>`<button class="opt" onclick="pickOpt(${i},this)">${o}</button>`).join('');
+    answerHTML=`<div class="${grid}">${opts}</div>`;
+  }
+
+  card.innerHTML=`
+    <div class="p-top">
+      <span class="p-tag" style="color:${p.col};border-color:${p.col}55;background:${p.col}12">${p.tag}</span>
+      <span class="p-level">${p.levelTag}</span>
+      <span class="p-type">${p.type==='type'?'⌨️ Type it':'🖱️ Choose'}</span>
+    </div>
+    <span class="p-emoji">${p.e}</span>
+    <div class="p-question">${p.q}</div>
+    ${p.sub?`<div class="p-sub">${p.sub}</div>`:''}
+    <div class="think-box">🤔 <strong>Think it through:</strong> ${p.think}</div>
+    <div class="hint-box" id="hintBox" onclick="showHint()">💡 Tap for a hint</div>
+    ${answerHTML}
+    <div class="fb" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextPuzzle()">Next Puzzle ➡️</button>`;
+
+  card.style.animation='none'; void card.offsetWidth; card.style.animation='cardIn .45s cubic-bezier(.34,1.56,.64,1) both';
+  card.style.borderColor=p.col+'44';
+
+  if(p.type==='type') setTimeout(()=>{ const el=document.getElementById('typeIn'); if(el)el.focus(); },150);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showHint(){
+  if(hintShown||answered)return;
+  hintShown=true;
+  const hb=document.getElementById('hintBox');
+  hb.className='hint-box shown'; hb.textContent='💡 Hint: '+PUZZLES[qIdx].hint;
+}
+
+function submitType(){
+  if(answered)return;
+  const inp=document.getElementById('typeIn'), val=inp.value.trim().toLowerCase();
+  if(!val){inp.focus();return;}
+  const p=PUZZLES[qIdx];
+  const correct=p.accept.some(a=>val===a.toLowerCase()||val.replace(/[^a-z0-9]/g,'')===a.replace(/[^a-z0-9]/g,''));
+  inp.disabled=true; document.getElementById('subBtn').disabled=true;
+  inp.className='type-input '+(correct?'ok-in':'err-in');
+  process(correct,p);
+}
+
+function pickOpt(chosen,btn){
+  if(answered)return;
+  const p=PUZZLES[qIdx];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const correct=chosen===p.c;
+  if(correct) btn.classList.add('correct');
+  else { btn.classList.add('wrong'); document.querySelectorAll('.opt')[p.c].classList.add('correct'); }
+  process(correct,p);
+}
+
+function process(correct,p){
+  answered=true;
+  const fb=document.getElementById('fb'); fb.style.display='block';
+  if(correct){
+    const pts=10+(streak>=2?5:0)+(!hintShown?3:0);
+    score+=pts; streak++; if(streak>bestStreak)bestStreak=streak;
+    skillCorrect[p.skill]=(skillCorrect[p.skill]||0)+1;
+    document.getElementById('hudScore').textContent=score;
+    document.getElementById('hudStreak').textContent=streak+'🔥';
+    fb.className='fb ok';
+    fb.textContent=p.ok+(streak>=3?` 🔥 ${streak} in a row!`:'')+(!hintShown?' ⭐ No-hint bonus!':'');
+  } else {
+    streak=0; document.getElementById('hudStreak').textContent='0🔥';
+    fb.className='fb err'; fb.textContent=p.err;
+  }
+  document.getElementById('nextBtn').style.display='block';
+}
+
+function nextPuzzle(){
+  qIdx++;
+  if(qIdx>=PUZZLES.length) showResults();
+  else renderPuzzle();
+}
+
+function showResults(){
+  document.getElementById('puzzleSection').style.display='none';
+  document.getElementById('resultsSection').style.display='block';
+  document.getElementById('progFill').style.width='100%';
+
+  const totalCorrect=Object.values(skillCorrect).reduce((a,b)=>a+b,0);
+  const pct=totalCorrect/PUZZLES.length;
+  let trophy,title,sub;
+  if(pct===1)      {trophy='🏆';title='PERFECT BRAIN, David!';sub=`${score} points! Every single puzzle solved! You have an extraordinary mind! 🧠👑`;}
+  else if(pct>=.8) {trophy='🥇';title='Genius level, David!';sub=`${score} points! ${totalCorrect}/${PUZZLES.length} — logic, maths, riddles, spatial — all mastered! 🔥`;}
+  else if(pct>=.6) {trophy='🥈';title='Brilliant brain, David!';sub=`${score} points! ${totalCorrect}/${PUZZLES.length} — your brain is growing stronger! 💪`;}
+  else             {trophy='🧩';title='Good thinking, David!';sub=`${score} points! ${totalCorrect}/${PUZZLES.length} — brain training takes practice — try again! 🚀`;}
+
+  document.getElementById('rTrophy').textContent=trophy;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rSub').textContent=sub;
+  document.getElementById('rStars').textContent=pct===1?'⭐⭐⭐⭐⭐':pct>=.8?'⭐⭐⭐⭐':pct>=.6?'⭐⭐⭐':'⭐⭐';
+
+  const skills=[
+    {id:'logic', name:'Logic',   emoji:'🧩', col:'#7b5ea7'},
+    {id:'pattern',name:'Patterns',emoji:'🔢',col:'#2ec4b6'},
+    {id:'maths', name:'Maths',   emoji:'➕', col:'#ffc107'},
+    {id:'riddle',name:'Riddles', emoji:'🔮', col:'#ff6b6b'},
+    {id:'spatial',name:'Spatial',emoji:'🔷',col:'#2ec4b6'},
+    {id:'lateral',name:'Lateral',emoji:'💡',col:'#f72585'},
+    {id:'memory',name:'Memory',  emoji:'🧠', col:'#90e0ef'},
+  ];
+  const bs=document.getElementById('brainSkills'); bs.innerHTML='';
+  skills.filter(s=>skillTotal[s.id]>0).forEach(s=>{
+    const pct2=(skillCorrect[s.id]||0)/skillTotal[s.id];
+    const d=document.createElement('div'); d.className='bs-card';
+    d.innerHTML=`<span class="bs-emoji">${s.emoji}</span><div class="bs-name">${s.name}: ${skillCorrect[s.id]||0}/${skillTotal[s.id]}</div><div class="bs-bar-wrap"><div class="bs-bar" style="background:${s.col};width:${Math.round(pct2*100)}%"></div></div>`;
+    bs.appendChild(d);
+  });
+
+  const ml=document.getElementById('rMl');
+  if(pct>=.7){
+    ml.innerHTML=`
+      <p class="en">🇬🇧 Incredible brain, David! Logic, patterns, riddles, spatial — you crushed them all! 🧠👑</p>
+      <p class="ro">🇷🇴 Creier incredibil, David! Logică, tipare, ghicitori, spațial — le-ai rezolvat pe toate! 🌟</p>
+      <p class="es">🇪🇸 ¡Mente increíble, David! ¡Lógica, patrones, acertijos — eres un genio! 🏆</p>`;
+  } else {
+    ml.innerHTML=`
+      <p class="en">🇬🇧 Great thinking, David! Brain training gets easier with practice — try again! 💪</p>
+      <p class="ro">🇷🇴 Gândire grozavă, David! Antrenamentul creierului devine mai ușor cu practică! 🔄</p>
+      <p class="es">🇪🇸 ¡Gran pensamiento, David! ¡El entrenamiento cerebral mejora con la práctica! 🔄</p>`;
+  }
+  if(pct>=.6) launchConfetti();
+}
+
+function launchConfetti(){
+  const cols=['#7b5ea7','#2ec4b6','#ffc107','#ff6b6b','#7bed9f','#f72585','#90e0ef'];
+  for(let i=0;i<80;i++){setTimeout(()=>{const c=document.createElement('div');c.className='cp';c.style.left=(Math.random()*100)+'vw';c.style.background=cols[Math.floor(Math.random()*cols.length)];c.style.animationDuration=(1.5+Math.random()*2.5)+'s';c.style.animationDelay=(Math.random()*.4)+'s';c.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.appendChild(c);setTimeout(()=>c.remove(),3500);},i*22);}
+}
+
+renderPuzzle();
+</script>
+</body>
+</html>
