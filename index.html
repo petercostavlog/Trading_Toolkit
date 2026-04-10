@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trading Toolkit — Peter's Command Centre</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Family Toolkit — Costache Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-primary: #0a0b0f;
@@ -17,26 +17,28 @@
     --text-primary: #e8e9f0;
     --text-secondary: #8b8fa4;
     --text-muted: #555874;
-    --accent-gold: #BEA064;
-    --accent-gold-dim: rgba(190, 160, 100, 0.15);
-    --accent-gold-glow: rgba(190, 160, 100, 0.3);
-    --accent-green: #3dd68c;
-    --accent-green-dim: rgba(61, 214, 140, 0.12);
-    --accent-red: #f25f5c;
-    --accent-red-dim: rgba(242, 95, 92, 0.12);
     --accent-blue: #5c9cf2;
     --accent-blue-dim: rgba(92, 156, 242, 0.12);
+    --accent-pink: #f472b6;
+    --accent-pink-dim: rgba(244, 114, 182, 0.12);
+    --accent-green: #3dd68c;
+    --accent-green-dim: rgba(61, 214, 140, 0.12);
+    --accent-gold: #BEA064;
+    --accent-gold-dim: rgba(190, 160, 100, 0.15);
+    --accent-red: #f25f5c;
+    --accent-red-dim: rgba(242, 95, 92, 0.12);
     --accent-purple: #a78bfa;
     --accent-purple-dim: rgba(167, 139, 250, 0.12);
     --accent-cyan: #22d3ee;
     --accent-cyan-dim: rgba(34, 211, 238, 0.12);
-    --radius: 12px;
-    --radius-sm: 8px;
+    --accent-orange: #f59e0b;
+    --accent-orange-dim: rgba(245, 158, 11, 0.12);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 20px;
     --shadow: 0 4px 24px rgba(0,0,0,0.4);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     background: var(--bg-primary);
     color: var(--text-primary);
@@ -44,69 +46,262 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* ── BACKGROUND ATMOSPHERE ── */
   body::before {
     content: '';
-    position: fixed;
-    top: -40%; left: -20%;
+    position: fixed; top: -40%; left: -20%;
     width: 80vw; height: 80vh;
-    background: radial-gradient(ellipse, rgba(190,160,100,0.04) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    bottom: -30%; right: -10%;
-    width: 60vw; height: 60vh;
     background: radial-gradient(ellipse, rgba(92,156,242,0.03) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
   /* ── HEADER ── */
   .header {
     position: relative; z-index: 1;
-    padding: 40px 48px 24px;
+    padding: 32px 48px 20px;
     display: flex; align-items: flex-end; justify-content: space-between;
     border-bottom: 1px solid var(--border);
   }
   .header-left h1 {
-    font-size: 32px; font-weight: 800;
-    letter-spacing: -0.5px;
-    background: linear-gradient(135deg, var(--text-primary), var(--accent-gold));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+    color: var(--text-primary);
   }
+  .header-left h1 span { opacity: 0.4; font-weight: 400; }
   .header-left p {
-    color: var(--text-secondary); font-size: 14px; margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary); font-size: 13px;
+    font-family: 'JetBrains Mono', monospace; margin-top: 2px;
   }
-  .header-right {
-    display: flex; gap: 12px; align-items: center;
-  }
+  .header-right { display: flex; gap: 10px; align-items: center; }
   .clock {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px; color: var(--text-muted);
+    font-size: 12px; color: var(--text-muted);
     background: var(--bg-card); border: 1px solid var(--border);
     padding: 6px 14px; border-radius: var(--radius-sm);
   }
-  .btn-settings {
-    background: var(--bg-card); border: 1px solid var(--border);
-    color: var(--text-secondary); padding: 8px 16px;
-    border-radius: var(--radius-sm); cursor: pointer;
-    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
-    transition: all 0.2s;
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb {
+    position: relative; z-index: 1;
+    padding: 16px 48px;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
   }
-  .btn-settings:hover {
-    border-color: var(--accent-gold); color: var(--accent-gold);
+  .crumb {
+    color: var(--text-muted); cursor: pointer; transition: color 0.2s;
+    text-decoration: none; background: none; border: none;
+    font-family: inherit; font-size: inherit;
   }
+  .crumb:hover { color: var(--text-primary); }
+  .crumb.active { color: var(--text-secondary); cursor: default; }
+  .crumb-sep { color: var(--text-muted); opacity: 0.4; }
+
+  /* ── MAIN CONTAINER ── */
+  .main {
+    position: relative; z-index: 1;
+    padding: 8px 48px 60px;
+  }
+
+  /* ── PROFILE SELECT SCREEN ── */
+  .profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 800px;
+    margin: 60px auto;
+    animation: fadeUp 0.4s ease both;
+  }
+  .profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .profile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .profile-card:hover::before { opacity: 1; }
+  .profile-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin: 0 auto 16px;
+    border: 3px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .profile-card:hover .profile-avatar { border-color: inherit; }
+  .profile-name {
+    font-size: 22px; font-weight: 700; margin-bottom: 4px;
+  }
+  .profile-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+  }
+
+  /* Profile colours */
+  .profile-catalin { border-color: rgba(92,156,242,0.25); }
+  .profile-catalin:hover { border-color: var(--accent-blue); background: rgba(92,156,242,0.05); }
+  .profile-catalin::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
+  .profile-catalin .profile-avatar { border-color: rgba(92,156,242,0.3); }
+  .profile-catalin:hover .profile-avatar { border-color: var(--accent-blue); }
+  .profile-catalin .profile-name { color: var(--accent-blue); }
+
+  .profile-ionela { border-color: rgba(244,114,182,0.25); }
+  .profile-ionela:hover { border-color: var(--accent-pink); background: rgba(244,114,182,0.05); }
+  .profile-ionela::before { background: linear-gradient(90deg, var(--accent-pink), transparent); }
+  .profile-ionela .profile-avatar { border-color: rgba(244,114,182,0.3); }
+  .profile-ionela:hover .profile-avatar { border-color: var(--accent-pink); }
+  .profile-ionela .profile-name { color: var(--accent-pink); }
+
+  .profile-david { border-color: rgba(61,214,140,0.25); }
+  .profile-david:hover { border-color: var(--accent-green); background: rgba(61,214,140,0.05); }
+  .profile-david::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
+  .profile-david .profile-avatar { border-color: rgba(61,214,140,0.3); }
+  .profile-david:hover .profile-avatar { border-color: var(--accent-green); }
+  .profile-david .profile-name { color: var(--accent-green); }
+
+  /* ── SUBCATEGORY CARDS ── */
+  .subcats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+    max-width: 900px;
+    margin: 40px auto;
+    animation: fadeUp 0.4s ease both;
+  }
+  .subcat-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px 24px 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .subcat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    transition: opacity 0.3s;
+  }
+  .subcat-card::after {
+    content: '';
+    position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    opacity: 0; transition: opacity 0.4s;
+    pointer-events: none;
+  }
+  .subcat-card:hover {
+    transform: translateY(-4px); box-shadow: var(--shadow);
+  }
+  .subcat-card:hover::after { opacity: 1; }
+  .subcat-emoji-wrap {
+    width: 64px; height: 64px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 30px;
+    border: 2px solid var(--border);
+    transition: all 0.3s;
+  }
+  .subcat-name { font-size: 19px; font-weight: 700; transition: color 0.3s; }
+  .subcat-desc {
+    font-size: 12px; color: var(--text-muted); margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .subcat-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; margin-top: 10px;
+    padding: 4px 12px; border-radius: 20px;
+    display: inline-block;
+  }
+
+  /* Subcat colour variants */
+  .subcat-blue { border-color: rgba(92,156,242,0.25); background: rgba(92,156,242,0.04); }
+  .subcat-blue::before { background: linear-gradient(90deg, var(--accent-blue), transparent); opacity: 1; }
+  .subcat-blue::after { background: radial-gradient(circle at 50% 0%, rgba(92,156,242,0.08), transparent 60%); }
+  .subcat-blue:hover { border-color: var(--accent-blue); background: rgba(92,156,242,0.08); }
+  .subcat-blue .subcat-emoji-wrap { background: var(--accent-blue-dim); border-color: rgba(92,156,242,0.3); }
+  .subcat-blue:hover .subcat-emoji-wrap { border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(92,156,242,0.2); }
+  .subcat-blue .subcat-name { color: var(--accent-blue); }
+  .subcat-blue .subcat-count { background: var(--accent-blue-dim); color: var(--accent-blue); }
+
+  .subcat-gold { border-color: rgba(190,160,100,0.25); background: rgba(190,160,100,0.04); }
+  .subcat-gold::before { background: linear-gradient(90deg, var(--accent-gold), transparent); opacity: 1; }
+  .subcat-gold::after { background: radial-gradient(circle at 50% 0%, rgba(190,160,100,0.08), transparent 60%); }
+  .subcat-gold:hover { border-color: var(--accent-gold); background: rgba(190,160,100,0.08); }
+  .subcat-gold .subcat-emoji-wrap { background: var(--accent-gold-dim); border-color: rgba(190,160,100,0.3); }
+  .subcat-gold:hover .subcat-emoji-wrap { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(190,160,100,0.2); }
+  .subcat-gold .subcat-name { color: var(--accent-gold); }
+  .subcat-gold .subcat-count { background: var(--accent-gold-dim); color: var(--accent-gold); }
+
+  .subcat-pink { border-color: rgba(244,114,182,0.25); background: rgba(244,114,182,0.04); }
+  .subcat-pink::before { background: linear-gradient(90deg, var(--accent-pink), transparent); opacity: 1; }
+  .subcat-pink::after { background: radial-gradient(circle at 50% 0%, rgba(244,114,182,0.08), transparent 60%); }
+  .subcat-pink:hover { border-color: var(--accent-pink); background: rgba(244,114,182,0.08); }
+  .subcat-pink .subcat-emoji-wrap { background: var(--accent-pink-dim); border-color: rgba(244,114,182,0.3); }
+  .subcat-pink:hover .subcat-emoji-wrap { border-color: var(--accent-pink); box-shadow: 0 0 20px rgba(244,114,182,0.2); }
+  .subcat-pink .subcat-name { color: var(--accent-pink); }
+  .subcat-pink .subcat-count { background: var(--accent-pink-dim); color: var(--accent-pink); }
+
+  .subcat-green { border-color: rgba(61,214,140,0.25); background: rgba(61,214,140,0.04); }
+  .subcat-green::before { background: linear-gradient(90deg, var(--accent-green), transparent); opacity: 1; }
+  .subcat-green::after { background: radial-gradient(circle at 50% 0%, rgba(61,214,140,0.08), transparent 60%); }
+  .subcat-green:hover { border-color: var(--accent-green); background: rgba(61,214,140,0.08); }
+  .subcat-green .subcat-emoji-wrap { background: var(--accent-green-dim); border-color: rgba(61,214,140,0.3); }
+  .subcat-green:hover .subcat-emoji-wrap { border-color: var(--accent-green); box-shadow: 0 0 20px rgba(61,214,140,0.2); }
+  .subcat-green .subcat-name { color: var(--accent-green); }
+  .subcat-green .subcat-count { background: var(--accent-green-dim); color: var(--accent-green); }
+
+  .subcat-purple { border-color: rgba(167,139,250,0.25); background: rgba(167,139,250,0.04); }
+  .subcat-purple::before { background: linear-gradient(90deg, var(--accent-purple), transparent); opacity: 1; }
+  .subcat-purple::after { background: radial-gradient(circle at 50% 0%, rgba(167,139,250,0.08), transparent 60%); }
+  .subcat-purple:hover { border-color: var(--accent-purple); background: rgba(167,139,250,0.08); }
+  .subcat-purple .subcat-emoji-wrap { background: var(--accent-purple-dim); border-color: rgba(167,139,250,0.3); }
+  .subcat-purple:hover .subcat-emoji-wrap { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(167,139,250,0.2); }
+  .subcat-purple .subcat-name { color: var(--accent-purple); }
+  .subcat-purple .subcat-count { background: var(--accent-purple-dim); color: var(--accent-purple); }
+
+  .subcat-red { border-color: rgba(242,95,92,0.25); background: rgba(242,95,92,0.04); }
+  .subcat-red::before { background: linear-gradient(90deg, var(--accent-red), transparent); opacity: 1; }
+  .subcat-red::after { background: radial-gradient(circle at 50% 0%, rgba(242,95,92,0.08), transparent 60%); }
+  .subcat-red:hover { border-color: var(--accent-red); background: rgba(242,95,92,0.08); }
+  .subcat-red .subcat-emoji-wrap { background: var(--accent-red-dim); border-color: rgba(242,95,92,0.3); }
+  .subcat-red:hover .subcat-emoji-wrap { border-color: var(--accent-red); box-shadow: 0 0 20px rgba(242,95,92,0.2); }
+  .subcat-red .subcat-name { color: var(--accent-red); }
+  .subcat-red .subcat-count { background: var(--accent-red-dim); color: var(--accent-red); }
+
+  .subcat-cyan { border-color: rgba(34,211,238,0.25); background: rgba(34,211,238,0.04); }
+  .subcat-cyan::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); opacity: 1; }
+  .subcat-cyan::after { background: radial-gradient(circle at 50% 0%, rgba(34,211,238,0.08), transparent 60%); }
+  .subcat-cyan:hover { border-color: var(--accent-cyan); background: rgba(34,211,238,0.08); }
+  .subcat-cyan .subcat-emoji-wrap { background: var(--accent-cyan-dim); border-color: rgba(34,211,238,0.3); }
+  .subcat-cyan:hover .subcat-emoji-wrap { border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(34,211,238,0.2); }
+  .subcat-cyan .subcat-name { color: var(--accent-cyan); }
+  .subcat-cyan .subcat-count { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+
+  .subcat-orange { border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.04); }
+  .subcat-orange::before { background: linear-gradient(90deg, var(--accent-orange), transparent); opacity: 1; }
+  .subcat-orange::after { background: radial-gradient(circle at 50% 0%, rgba(245,158,11,0.08), transparent 60%); }
+  .subcat-orange:hover { border-color: var(--accent-orange); background: rgba(245,158,11,0.08); }
+  .subcat-orange .subcat-emoji-wrap { background: var(--accent-orange-dim); border-color: rgba(245,158,11,0.3); }
+  .subcat-orange:hover .subcat-emoji-wrap { border-color: var(--accent-orange); box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+  .subcat-orange .subcat-name { color: var(--accent-orange); }
+  .subcat-orange .subcat-count { background: var(--accent-orange-dim); color: var(--accent-orange); }
 
   /* ── TOOLBAR ── */
   .toolbar {
-    position: relative; z-index: 1;
-    padding: 20px 48px;
     display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 20px;
+    animation: fadeUp 0.3s ease both;
   }
   .search-box {
     flex: 1; min-width: 200px; max-width: 400px;
@@ -115,7 +310,7 @@
     color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 14px;
     outline: none; transition: border-color 0.2s;
   }
-  .search-box:focus { border-color: var(--accent-gold); }
+  .search-box:focus { border-color: var(--accent-blue); }
   .search-box::placeholder { color: var(--text-muted); }
   .filter-btn {
     background: var(--bg-card); border: 1px solid var(--border);
@@ -125,38 +320,30 @@
     transition: all 0.2s;
   }
   .filter-btn:hover, .filter-btn.active {
-    background: var(--accent-gold-dim); border-color: var(--accent-gold);
-    color: var(--accent-gold);
+    background: var(--accent-blue-dim); border-color: var(--accent-blue);
+    color: var(--accent-blue);
   }
+  .btn-action {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-secondary); padding: 10px 16px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+    transition: all 0.2s; margin-left: auto;
+  }
+  .btn-action:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
 
-  /* ── MAIN GRID ── */
-  .main {
-    position: relative; z-index: 1;
-    padding: 8px 48px 60px;
-  }
-  .category {
-    margin-top: 32px;
-    animation: fadeUp 0.5s ease both;
-  }
-  .category:nth-child(2) { animation-delay: 0.05s; }
-  .category:nth-child(3) { animation-delay: 0.1s; }
-  .category:nth-child(4) { animation-delay: 0.15s; }
-  .category:nth-child(5) { animation-delay: 0.2s; }
+  /* ── CATEGORY SECTIONS ── */
+  .category { margin-top: 28px; animation: fadeUp 0.4s ease both; }
   .category-header {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
   }
   .category-icon {
     width: 36px; height: 36px; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
   }
-  .category-title {
-    font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
-  }
+  .category-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
   .category-count {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted);
     background: var(--bg-card); border: 1px solid var(--border);
     padding: 2px 8px; border-radius: 20px;
   }
@@ -168,16 +355,11 @@
 
   /* ── TOOL CARD ── */
   .tool-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-    text-decoration: none;
-    display: block;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    cursor: pointer; transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+    text-decoration: none; display: block;
   }
   .tool-card::before {
     content: '';
@@ -185,70 +367,97 @@
     opacity: 0; transition: opacity 0.25s;
   }
   .tool-card:hover {
-    border-color: var(--border-hover);
-    background: var(--bg-card-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
+    border-color: var(--border-hover); background: var(--bg-card-hover);
+    transform: translateY(-2px); box-shadow: var(--shadow);
   }
   .tool-card:hover::before { opacity: 1; }
   .tool-card .card-top {
     display: flex; justify-content: space-between; align-items: flex-start;
   }
-  .tool-card .tool-emoji {
-    font-size: 28px; margin-bottom: 12px;
+  .card-top-right { display: flex; align-items: center; gap: 6px; }
+  .tool-card .tool-emoji { font-size: 28px; margin-bottom: 12px; }
+  .btn-gear {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: transparent; border: 1px solid transparent;
+    color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; transition: all 0.2s; opacity: 0;
   }
+  .tool-card:hover .btn-gear { opacity: 1; }
+  .btn-gear:hover { background: var(--bg-input); border-color: var(--border); color: var(--text-secondary); }
   .tool-card .tool-status {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; padding: 3px 8px;
-    border-radius: 20px; font-weight: 500;
+    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 500;
   }
   .status-ready { background: var(--accent-green-dim); color: var(--accent-green); }
   .status-wip { background: var(--accent-gold-dim); color: var(--accent-gold); }
   .status-planned { background: var(--bg-input); color: var(--text-muted); }
-  .tool-card h3 {
-    font-size: 15px; font-weight: 600; margin-bottom: 6px;
-    color: var(--text-primary);
-  }
-  .tool-card p {
-    font-size: 13px; color: var(--text-secondary); line-height: 1.5;
-  }
-  .tool-card .tool-tags {
-    margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap;
-  }
+  .tool-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+  .tool-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .tool-card .tool-tags { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
   .tool-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; padding: 3px 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px;
     background: var(--bg-input); border: 1px solid var(--border);
     border-radius: 4px; color: var(--text-muted);
   }
 
-  /* Category colour accents */
-  .cat-prep .category-icon { background: var(--accent-gold-dim); }
-  .cat-prep .tool-card::before { background: linear-gradient(90deg, var(--accent-gold), transparent); }
-  .cat-analysis .category-icon { background: var(--accent-blue-dim); }
-  .cat-analysis .tool-card::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
-  .cat-journal .category-icon { background: var(--accent-green-dim); }
-  .cat-journal .tool-card::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
-  .cat-risk .category-icon { background: var(--accent-red-dim); }
-  .cat-risk .tool-card::before { background: linear-gradient(90deg, var(--accent-red), transparent); }
-  .cat-learning .category-icon { background: var(--accent-purple-dim); }
-  .cat-learning .tool-card::before { background: linear-gradient(90deg, var(--accent-purple), transparent); }
-  .cat-utilities .category-icon { background: var(--accent-cyan-dim); }
-  .cat-utilities .tool-card::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); }
+  /* ── CATEGORY COLOUR ACCENTS ── */
+  .cat-gold .category-icon { background: var(--accent-gold-dim); }
+  .cat-gold .category-title { color: var(--accent-gold); }
+  .cat-gold .tool-card { background: rgba(190,160,100,0.06); border-color: rgba(190,160,100,0.18); }
+  .cat-gold .tool-card:hover { background: rgba(190,160,100,0.12); border-color: rgba(190,160,100,0.35); }
+  .cat-gold .tool-card::before { background: linear-gradient(90deg, var(--accent-gold), transparent); }
 
-  /* ── ADD TOOL CARD ── */
+  .cat-blue .category-icon { background: var(--accent-blue-dim); }
+  .cat-blue .category-title { color: var(--accent-blue); }
+  .cat-blue .tool-card { background: rgba(92,156,242,0.06); border-color: rgba(92,156,242,0.18); }
+  .cat-blue .tool-card:hover { background: rgba(92,156,242,0.12); border-color: rgba(92,156,242,0.35); }
+  .cat-blue .tool-card::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
+
+  .cat-green .category-icon { background: var(--accent-green-dim); }
+  .cat-green .category-title { color: var(--accent-green); }
+  .cat-green .tool-card { background: rgba(61,214,140,0.06); border-color: rgba(61,214,140,0.18); }
+  .cat-green .tool-card:hover { background: rgba(61,214,140,0.12); border-color: rgba(61,214,140,0.35); }
+  .cat-green .tool-card::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
+
+  .cat-red .category-icon { background: var(--accent-red-dim); }
+  .cat-red .category-title { color: var(--accent-red); }
+  .cat-red .tool-card { background: rgba(242,95,92,0.06); border-color: rgba(242,95,92,0.18); }
+  .cat-red .tool-card:hover { background: rgba(242,95,92,0.12); border-color: rgba(242,95,92,0.35); }
+  .cat-red .tool-card::before { background: linear-gradient(90deg, var(--accent-red), transparent); }
+
+  .cat-purple .category-icon { background: var(--accent-purple-dim); }
+  .cat-purple .category-title { color: var(--accent-purple); }
+  .cat-purple .tool-card { background: rgba(167,139,250,0.06); border-color: rgba(167,139,250,0.18); }
+  .cat-purple .tool-card:hover { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.35); }
+  .cat-purple .tool-card::before { background: linear-gradient(90deg, var(--accent-purple), transparent); }
+
+  .cat-cyan .category-icon { background: var(--accent-cyan-dim); }
+  .cat-cyan .category-title { color: var(--accent-cyan); }
+  .cat-cyan .tool-card { background: rgba(34,211,238,0.06); border-color: rgba(34,211,238,0.18); }
+  .cat-cyan .tool-card:hover { background: rgba(34,211,238,0.12); border-color: rgba(34,211,238,0.35); }
+  .cat-cyan .tool-card::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); }
+
+  .cat-pink .category-icon { background: var(--accent-pink-dim); }
+  .cat-pink .category-title { color: var(--accent-pink); }
+  .cat-pink .tool-card { background: rgba(244,114,182,0.06); border-color: rgba(244,114,182,0.18); }
+  .cat-pink .tool-card:hover { background: rgba(244,114,182,0.12); border-color: rgba(244,114,182,0.35); }
+  .cat-pink .tool-card::before { background: linear-gradient(90deg, var(--accent-pink), transparent); }
+
+  .cat-orange .category-icon { background: var(--accent-orange-dim); }
+  .cat-orange .category-title { color: var(--accent-orange); }
+  .cat-orange .tool-card { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.18); }
+  .cat-orange .tool-card:hover { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); }
+  .cat-orange .tool-card::before { background: linear-gradient(90deg, var(--accent-orange), transparent); }
+
+  /* ── ADD CARD ── */
   .add-card {
-    border: 2px dashed var(--border);
-    background: transparent;
+    border: 2px dashed var(--border); background: transparent;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    min-height: 160px; cursor: pointer;
-    transition: all 0.25s;
+    min-height: 160px; cursor: pointer; transition: all 0.25s;
   }
-  .add-card:hover {
-    border-color: var(--accent-gold);
-    background: var(--accent-gold-dim);
-  }
+  .add-card:hover { border-color: var(--accent-blue); background: var(--accent-blue-dim); }
   .add-card .plus { font-size: 28px; color: var(--text-muted); margin-bottom: 6px; }
   .add-card span { font-size: 13px; color: var(--text-muted); }
 
@@ -262,12 +471,9 @@
   .modal {
     background: var(--bg-secondary); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 32px;
-    width: 90%; max-width: 520px;
-    animation: fadeUp 0.3s ease;
+    width: 90%; max-width: 520px; animation: fadeUp 0.3s ease;
   }
-  .modal h2 {
-    font-size: 20px; font-weight: 700; margin-bottom: 20px;
-  }
+  .modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
   .modal label {
     display: block; font-size: 13px; font-weight: 500;
     color: var(--text-secondary); margin-bottom: 6px; margin-top: 14px;
@@ -278,13 +484,9 @@
     color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 14px;
     outline: none; transition: border-color 0.2s;
   }
-  .modal input:focus, .modal select:focus, .modal textarea:focus {
-    border-color: var(--accent-gold);
-  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent-blue); }
   .modal textarea { resize: vertical; min-height: 70px; }
-  .modal-actions {
-    margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;
-  }
+  .modal-actions { margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; }
   .btn-cancel {
     background: transparent; border: 1px solid var(--border);
     color: var(--text-secondary); padding: 10px 20px;
@@ -292,23 +494,30 @@
     font-family: 'Outfit', sans-serif; font-size: 14px;
   }
   .btn-save {
-    background: var(--accent-gold); border: none;
-    color: var(--bg-primary); padding: 10px 24px;
+    background: var(--accent-blue); border: none;
+    color: #fff; padding: 10px 24px;
     border-radius: var(--radius-sm); cursor: pointer;
     font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
   }
   .btn-save:hover { filter: brightness(1.1); }
+  .btn-delete {
+    background: var(--accent-red-dim); border: 1px solid var(--accent-red);
+    color: var(--accent-red); padding: 10px 16px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+    margin-right: auto;
+  }
+  .btn-delete:hover { background: var(--accent-red); color: #fff; }
+  .btn-delete.hidden { display: none; }
 
-  /* ── ANIMATIONS ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
-    .header, .toolbar, .main { padding-left: 20px; padding-right: 20px; }
+    .header, .breadcrumb, .main { padding-left: 20px; padding-right: 20px; }
     .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .profiles-grid { grid-template-columns: 1fr; }
     .tools-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -317,33 +526,25 @@
 
 <header class="header">
   <div class="header-left">
-    <h1>⚡ Trading Toolkit</h1>
-    <p>Peter's Command Centre — NADRO / ES / MES</p>
+    <h1>⚡ Costache Hub</h1>
+    <p>Family Toolkit</p>
   </div>
   <div class="header-right">
     <div class="clock" id="clock"></div>
-    <button class="btn-settings" onclick="openModal('category')">+ Category</button>
   </div>
 </header>
 
-<div class="toolbar">
-  <input class="search-box" type="text" placeholder="Search tools…" id="searchInput" oninput="filterTools()">
-  <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
-  <button class="filter-btn" onclick="setFilter('ready', this)">Ready</button>
-  <button class="filter-btn" onclick="setFilter('wip', this)">WIP</button>
-  <button class="filter-btn" onclick="setFilter('planned', this)">Planned</button>
-</div>
-
+<nav class="breadcrumb" id="breadcrumb"></nav>
 <main class="main" id="mainContent"></main>
 
-<!-- ADD / EDIT TOOL MODAL -->
+<!-- TOOL MODAL -->
 <div class="modal-overlay" id="toolModal">
   <div class="modal">
     <h2 id="modalTitle">Add New Tool</h2>
     <label>Tool Name</label>
     <input type="text" id="fName" placeholder="e.g. Market Prep Checklist">
     <label>Description</label>
-    <textarea id="fDesc" placeholder="Short description of what this tool does"></textarea>
+    <textarea id="fDesc" placeholder="Short description"></textarea>
     <label>Category</label>
     <select id="fCat"></select>
     <label>Status</label>
@@ -353,113 +554,212 @@
       <option value="planned">Planned</option>
     </select>
     <label>File / URL (optional)</label>
-    <input type="text" id="fLink" placeholder="e.g. tools/market-prep.html or https://...">
+    <input type="text" id="fLink" placeholder="e.g. position-size-calculator.html">
     <label>Tags (comma separated)</label>
-    <input type="text" id="fTags" placeholder="e.g. sierra-chart, daily, nadro">
+    <input type="text" id="fTags" placeholder="e.g. nadro, daily">
     <label>Emoji Icon</label>
     <input type="text" id="fEmoji" placeholder="e.g. 📊" maxlength="4">
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('tool')">Cancel</button>
+      <button class="btn-delete hidden" id="btnDelete" onclick="deleteTool()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" onclick="saveTool()">Save Tool</button>
     </div>
   </div>
 </div>
 
-<!-- ADD CATEGORY MODAL -->
-<div class="modal-overlay" id="categoryModal">
-  <div class="modal">
-    <h2>Add New Category</h2>
-    <label>Category Name</label>
-    <input type="text" id="catName" placeholder="e.g. Backtesting">
-    <label>Emoji Icon</label>
-    <input type="text" id="catEmoji" placeholder="e.g. 🔬" maxlength="4">
-    <label>Accent Colour</label>
-    <select id="catColor">
-      <option value="gold">Gold</option>
-      <option value="blue">Blue</option>
-      <option value="green">Green</option>
-      <option value="red">Red</option>
-      <option value="purple">Purple</option>
-      <option value="cyan">Cyan</option>
-    </select>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('category')">Cancel</button>
-      <button class="btn-save" onclick="saveCategory()">Save Category</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ═══════════════════════════════════════════════════════════════
-// DATA STORE — Edit this section to add/remove tools & categories
-// Everything is saved to localStorage so changes persist in-browser
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// DATA STRUCTURE — Profiles → Subcategories → Categories → Tools
+// ═══════════════════════════════════════════════════════════
 
 const DEFAULT_DATA = {
-  categories: [
-    { id: 'prep', name: 'Market Prep', emoji: '🎯', color: 'gold', cssClass: 'cat-prep' },
-    { id: 'analysis', name: 'Analysis & Order Flow', emoji: '📊', color: 'blue', cssClass: 'cat-analysis' },
-    { id: 'journal', name: 'Journaling & Review', emoji: '📓', color: 'green', cssClass: 'cat-journal' },
-    { id: 'risk', name: 'Risk & Position Sizing', emoji: '🛡️', color: 'red', cssClass: 'cat-risk' },
-    { id: 'learning', name: 'Learning & NADRO', emoji: '🧠', color: 'purple', cssClass: 'cat-learning' },
-    { id: 'utilities', name: 'Utilities & Lifestyle', emoji: '⚙️', color: 'cyan', cssClass: 'cat-utilities' },
+  profiles: [
+    {
+      id: 'catalin', name: 'Catalin', emoji: '👨‍💻', color: 'blue',
+      subcategories: [
+        {
+          id: 'trading', name: 'Trading', emoji: '📈', color: 'blue', desc: 'ES/MES · NADRO · Prop Firms',
+          categories: [
+            { id: 'prep', name: 'Market Prep', emoji: '🎯', color: 'gold' },
+            { id: 'analysis', name: 'Analysis & Order Flow', emoji: '📊', color: 'blue' },
+            { id: 'journal', name: 'Journaling & Review', emoji: '📓', color: 'green' },
+            { id: 'risk', name: 'Risk & Position Sizing', emoji: '🛡️', color: 'red' },
+            { id: 'learning', name: 'Learning & NADRO', emoji: '🧠', color: 'purple' },
+            { id: 'utilities', name: 'Utilities', emoji: '⚙️', color: 'cyan' },
+          ]
+        },
+        {
+          id: 'personal', name: 'Personal', emoji: '🏠', color: 'gold', desc: 'Life · Finance · Projects',
+          categories: [
+            { id: 'life', name: 'Lifestyle & Wellbeing', emoji: '💪', color: 'green' },
+            { id: 'finance', name: 'Personal Finance', emoji: '💰', color: 'gold' },
+            { id: 'projects', name: 'Side Projects', emoji: '🚀', color: 'purple' },
+            { id: 'career', name: 'Career & Nursing', emoji: '🏥', color: 'red' },
+          ]
+        }
+      ]
+    },
+    {
+      id: 'ionela', name: 'Ionela', emoji: '👩‍🦰', color: 'pink',
+      subcategories: [
+        {
+          id: 'ionela-recipes', name: 'Recipes', emoji: '🍳', color: 'orange', desc: 'Cooking · Baking · Meal Plans',
+          categories: [
+            { id: 'cooking', name: 'Cooking & Baking', emoji: '👩‍🍳', color: 'orange' },
+            { id: 'mealplan', name: 'Meal Planning', emoji: '📋', color: 'green' },
+          ]
+        },
+        {
+          id: 'ionela-fitness', name: 'Fitness', emoji: '🏋️', color: 'red', desc: 'Workouts · Yoga · Routines',
+          categories: [
+            { id: 'workouts', name: 'Workouts & Routines', emoji: '💪', color: 'red' },
+          ]
+        },
+        {
+          id: 'ionela-personal', name: 'Personal', emoji: '✨', color: 'pink', desc: 'Organisation · Planning · Self-care',
+          categories: [
+            { id: 'ionela-life', name: 'Organisation & Life', emoji: '📋', color: 'pink' },
+            { id: 'ionela-selfcare', name: 'Self-Care & Wellbeing', emoji: '🧘', color: 'purple' },
+          ]
+        }
+      ]
+    },
+    {
+      id: 'david', name: 'David', emoji: '🧒', color: 'green',
+      subcategories: [
+        {
+          id: 'david-learning', name: 'Year 3 Learning', emoji: '🎓', color: 'green', desc: 'UK Curriculum · Interactive Tools',
+          categories: [
+            { id: 'david-core', name: 'Core Subjects', emoji: '📚', color: 'green' },
+            { id: 'david-languages', name: 'Languages', emoji: '🗣️', color: 'cyan' },
+            { id: 'david-fun', name: 'Fun & Explore', emoji: '🦕', color: 'orange' },
+          ]
+        }
+      ]
+    }
   ],
+
   tools: [
-    // ── MARKET PREP ──
-    { id: 't1', cat: 'prep', name: 'Pre-Market Checklist', desc: 'Daily structured routine: overnight context, key levels, economic events, bias formation.', status: 'planned', link: '', tags: ['daily', 'routine'], emoji: '✅' },
-    { id: 't2', cat: 'prep', name: 'Key Levels Dashboard', desc: 'Auto-display of VAH, VAL, POC, VWAP, DVA levels from Sierra Chart exports.', status: 'planned', link: '', tags: ['sierra-chart', 'levels'], emoji: '📐' },
-    { id: 't3', cat: 'prep', name: 'Economic Calendar Widget', desc: 'Filtered view of high-impact events relevant to ES/MES.', status: 'planned', link: '', tags: ['macro', 'news'], emoji: '📅' },
+    // ── CATALIN / TRADING ──
+    { id: 't1', profile: 'catalin', subcat: 'trading', cat: 'prep', name: 'Pre-Market Checklist', desc: 'Daily structured routine: overnight context, key levels, economic events, bias formation.', status: 'planned', link: '', tags: ['daily', 'routine'], emoji: '✅' },
+    { id: 't2', profile: 'catalin', subcat: 'trading', cat: 'prep', name: 'Key Levels Dashboard', desc: 'Auto-display of VAH, VAL, POC, VWAP, DVA levels from Sierra Chart exports.', status: 'planned', link: '', tags: ['sierra-chart', 'levels'], emoji: '📐' },
+    { id: 't3', profile: 'catalin', subcat: 'trading', cat: 'prep', name: 'Economic Calendar Widget', desc: 'Filtered view of high-impact events relevant to ES/MES.', status: 'planned', link: '', tags: ['macro', 'news'], emoji: '📅' },
+    { id: 't4', profile: 'catalin', subcat: 'trading', cat: 'analysis', name: 'NADRO Setup Scanner', desc: 'Interactive tool to identify balance/imbalance, value area rotations, and NADRO setups.', status: 'planned', link: '', tags: ['nadro', 'setups'], emoji: '🔍' },
+    { id: 't5', profile: 'catalin', subcat: 'trading', cat: 'analysis', name: 'Multi-Timeframe Viewer', desc: 'Side-by-side TF analysis with annotations for context alignment.', status: 'planned', link: '', tags: ['mtf', 'context'], emoji: '🔭' },
+    { id: 't6', profile: 'catalin', subcat: 'trading', cat: 'journal', name: 'Trade Journal Entry', desc: 'Structured journal: setup, execution, outcome, screenshot, emotional state, NADRO stage rating.', status: 'planned', link: '', tags: ['notion', 'daily'], emoji: '📝' },
+    { id: 't7', profile: 'catalin', subcat: 'trading', cat: 'journal', name: 'Weekly Review Template', desc: 'Summarise wins, losses, patterns, NADRO progression, and goals for next week.', status: 'planned', link: '', tags: ['review', 'weekly'], emoji: '📋' },
+    { id: 't8', profile: 'catalin', subcat: 'trading', cat: 'risk', name: 'Position Size Calculator', desc: 'Input account size, risk %, stop distance → outputs contracts for MES/ES.', status: 'ready', link: 'position-size-calculator.html', tags: ['risk', 'calculator'], emoji: '🧮' },
+    { id: 't9', profile: 'catalin', subcat: 'trading', cat: 'risk', name: 'Prop Firm Tracker', desc: 'Track Apteros & Apex challenge progress: daily P&L, drawdown, rules compliance.', status: 'planned', link: '', tags: ['apteros', 'apex', 'challenge'], emoji: '🏆' },
+    { id: 't10', profile: 'catalin', subcat: 'trading', cat: 'learning', name: 'NADRO Stage Tracker', desc: 'Self-assessment tool: rate your understanding per concept, track progression through stages 1-7.', status: 'planned', link: '', tags: ['nadro', 'progress'], emoji: '🪜' },
+    { id: 't11', profile: 'catalin', subcat: 'trading', cat: 'learning', name: 'Concept Flashcards', desc: 'Interactive flashcards for NADRO concepts, value area rules, and order flow patterns.', status: 'planned', link: '', tags: ['study', 'flashcards'], emoji: '🃏' },
+    { id: 't12', profile: 'catalin', subcat: 'trading', cat: 'utilities', name: 'ES Futures Clock', desc: 'Live London ↔ Chicago session clock with ETH/Pit status and countdown timers.', status: 'ready', link: 'futures-clock.html', tags: ['time', 'sessions', 'cme'], emoji: '🕐' },
 
-    // ── ANALYSIS ──
-    { id: 't4', cat: 'analysis', name: 'NADRO Setup Scanner', desc: 'Interactive tool to identify balance/imbalance, value area rotations, and NADRO setups.', status: 'planned', link: '', tags: ['nadro', 'setups'], emoji: '🔍' },
-    { id: 't5', cat: 'analysis', name: 'Multi-Timeframe Viewer', desc: 'Side-by-side TF analysis with annotations for context alignment.', status: 'planned', link: '', tags: ['mtf', 'context'], emoji: '🔭' },
+    // ── CATALIN / PERSONAL ──
+    { id: 't19', profile: 'catalin', subcat: 'personal', cat: 'career', name: 'CNS Application Tracker', desc: 'Track job applications, interview prep, and supporting statements.', status: 'planned', link: '', tags: ['nursing', 'career'], emoji: '🏥' },
+    { id: 't20', profile: 'catalin', subcat: 'personal', cat: 'career', name: 'Academic Essay Helper', desc: 'Level 7 essay structure, referencing, and clinical appraisal tools.', status: 'planned', link: '', tags: ['academic', 'level-7'], emoji: '📝' },
+    { id: 't21', profile: 'catalin', subcat: 'personal', cat: 'finance', name: 'Budget Planner', desc: 'Monthly income/expenses tracker and savings goals.', status: 'planned', link: '', tags: ['budget', 'finance'], emoji: '💷' },
+    { id: 't22', profile: 'catalin', subcat: 'personal', cat: 'life', name: 'Night Shift Planner', desc: 'Sleep schedule optimiser for rotating shift patterns.', status: 'planned', link: '', tags: ['shifts', 'health'], emoji: '🌙' },
 
-    // ── JOURNAL ──
-    { id: 't6', cat: 'journal', name: 'Trade Journal Entry', desc: 'Structured journal: setup, execution, outcome, screenshot, emotional state, NADRO stage rating.', status: 'planned', link: '', tags: ['notion', 'daily'], emoji: '📝' },
-    { id: 't7', cat: 'journal', name: 'Weekly Review Template', desc: 'Summarise wins, losses, patterns, NADRO progression, and goals for next week.', status: 'planned', link: '', tags: ['review', 'weekly'], emoji: '📋' },
-
-    // ── RISK ──
-    { id: 't8', cat: 'risk', name: 'Position Size Calculator', desc: 'Input account size, risk %, stop distance → outputs contracts for MES/ES.', status: 'planned', link: '', tags: ['risk', 'calculator'], emoji: '🧮' },
-    { id: 't9', cat: 'risk', name: 'Prop Firm Tracker', desc: 'Track Apteros & Apex challenge progress: daily P&L, drawdown, rules compliance.', status: 'planned', link: '', tags: ['apteros', 'apex', 'challenge'], emoji: '🏆' },
-
-    // ── LEARNING ──
-    { id: 't10', cat: 'learning', name: 'NADRO Stage Tracker', desc: 'Self-assessment tool: rate your understanding per concept, track progression through stages 1-7.', status: 'planned', link: '', tags: ['nadro', 'progress'], emoji: '🪜' },
-    { id: 't11', cat: 'learning', name: 'Concept Flashcards', desc: 'Interactive flashcards for NADRO concepts, value area rules, and order flow patterns.', status: 'planned', link: '', tags: ['study', 'flashcards'], emoji: '🃏' },
-
-    // ── UTILITIES ──
-    { id: 't12', cat: 'utilities', name: 'Session Time Converter', desc: 'London ↔ CME session times, with DST awareness.', status: 'ready', link: '', tags: ['time', 'sessions'], emoji: '🕐' },
+    // ── DAVID / LEARNING ──
+    { id: 't13', profile: 'david', subcat: 'david-learning', cat: 'david-core', name: 'Brain Gym', desc: 'Interactive maths and learning exercises for Year 3.', status: 'ready', link: 'brain-gym.html', tags: ['maths', 'year-3'], emoji: '🧠' },
+    { id: 't14', profile: 'david', subcat: 'david-learning', cat: 'david-core', name: 'Spelling & English', desc: 'Weekly spelling lists, grammar exercises, and reading comprehension.', status: 'planned', link: '', tags: ['english', 'spelling'], emoji: '📖' },
+    { id: 't15', profile: 'david', subcat: 'david-learning', cat: 'david-core', name: 'Science Explorer', desc: 'Interactive lessons on plants, rocks, light, forces — Year 3 curriculum.', status: 'planned', link: '', tags: ['science', 'year-3'], emoji: '🔬' },
+    { id: 't16', profile: 'david', subcat: 'david-learning', cat: 'david-core', name: 'History & Geography', desc: 'Stone Age to Iron Age, UK geography, continents and oceans.', status: 'planned', link: '', tags: ['history', 'geography'], emoji: '🌍' },
+    { id: 't17', profile: 'david', subcat: 'david-learning', cat: 'david-languages', name: 'Spanish & Romanian', desc: 'Bilingual flashcards and practice for Spanish and Romanian.', status: 'planned', link: '', tags: ['languages', 'bilingual'], emoji: '🗣️' },
+    { id: 't18', profile: 'david', subcat: 'david-learning', cat: 'david-fun', name: 'Dino Masterclass', desc: 'Interactive dinosaur encyclopedia with quizzes and fun facts.', status: 'ready', link: 'dino-masterclass.html', tags: ['dinosaurs', 'fun'], emoji: '🦕' },
   ]
 };
 
 // ── PERSISTENCE ──
 function loadData() {
   try {
-    const saved = localStorage.getItem('tradingToolkit');
+    const saved = localStorage.getItem('familyToolkit_v3');
     return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
   } catch { return JSON.parse(JSON.stringify(DEFAULT_DATA)); }
 }
-function saveData(data) {
-  localStorage.setItem('tradingToolkit', JSON.stringify(data));
-}
-function resetData() {
-  if (confirm('Reset all tools & categories to defaults? This cannot be undone.')) {
-    localStorage.removeItem('tradingToolkit');
-    location.reload();
-  }
-}
+function saveData() { localStorage.setItem('familyToolkit_v3', JSON.stringify(DATA)); }
 
 let DATA = loadData();
+let nav = { profile: null, subcat: null };
 let currentFilter = 'all';
 let editingToolId = null;
 
+// ── NAVIGATION ──
+function goHome() { nav = { profile: null, subcat: null }; render(); }
+function goProfile(id) { nav = { profile: id, subcat: null }; render(); }
+function goSubcat(id) { nav.subcat = id; render(); }
+
+// ── BREADCRUMB ──
+function renderBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  let html = `<button class="crumb${!nav.profile ? ' active' : ''}" onclick="goHome()">🏠 Home</button>`;
+  if (nav.profile) {
+    const p = DATA.profiles.find(p => p.id === nav.profile);
+    html += `<span class="crumb-sep">›</span>`;
+    html += `<button class="crumb${!nav.subcat ? ' active' : ''}" onclick="goProfile('${p.id}')">${p.emoji} ${p.name}</button>`;
+    if (nav.subcat) {
+      const sc = p.subcategories.find(s => s.id === nav.subcat);
+      html += `<span class="crumb-sep">›</span>`;
+      html += `<button class="crumb active">${sc.emoji} ${sc.name}</button>`;
+    }
+  }
+  bc.innerHTML = html;
+}
+
 // ── RENDER ──
 function render() {
+  renderBreadcrumb();
   const main = document.getElementById('mainContent');
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  let html = '';
+  if (!nav.profile) return renderProfiles(main);
+  if (!nav.subcat) return renderSubcats(main);
+  renderTools(main);
+}
 
-  DATA.categories.forEach(cat => {
-    let tools = DATA.tools.filter(t => t.cat === cat.id);
+function renderProfiles(main) {
+  let html = '<div class="profiles-grid">';
+  DATA.profiles.forEach(p => {
+    const toolCount = DATA.tools.filter(t => t.profile === p.id).length;
+    html += `<div class="profile-card profile-${p.id}" onclick="goProfile('${p.id}')">
+      <div class="profile-avatar">${p.emoji}</div>
+      <div class="profile-name">${p.name}</div>
+      <div class="profile-sub">${toolCount} tools</div>
+    </div>`;
+  });
+  html += '</div>';
+  main.innerHTML = html;
+}
+
+function renderSubcats(main) {
+  const profile = DATA.profiles.find(p => p.id === nav.profile);
+  let html = '<div class="subcats-grid">';
+  profile.subcategories.forEach(sc => {
+    const toolCount = DATA.tools.filter(t => t.profile === nav.profile && t.subcat === sc.id).length;
+    const colorClass = sc.color || profile.color;
+    html += `<div class="subcat-card subcat-${colorClass}" onclick="goSubcat('${sc.id}')">
+      <div class="subcat-emoji-wrap">${sc.emoji}</div>
+      <div class="subcat-name">${sc.name}</div>
+      ${sc.desc ? `<div class="subcat-desc">${sc.desc}</div>` : ''}
+      <div class="subcat-count">${toolCount} tool${toolCount !== 1 ? 's' : ''}</div>
+    </div>`;
+  });
+  html += '</div>';
+  main.innerHTML = html;
+}
+
+function renderTools(main) {
+  const profile = DATA.profiles.find(p => p.id === nav.profile);
+  const subcat = profile.subcategories.find(s => s.id === nav.subcat);
+  const search = document.getElementById('searchTools')?.value?.toLowerCase() || '';
+
+  let html = `<div class="toolbar">
+    <input class="search-box" type="text" placeholder="Search tools…" id="searchTools" oninput="render()" value="${search}">
+    <button class="filter-btn ${currentFilter==='all'?'active':''}" onclick="currentFilter='all';render()">All</button>
+    <button class="filter-btn ${currentFilter==='ready'?'active':''}" onclick="currentFilter='ready';render()">Ready</button>
+    <button class="filter-btn ${currentFilter==='planned'?'active':''}" onclick="currentFilter='planned';render()">Planned</button>
+  </div>`;
+
+  subcat.categories.forEach(cat => {
+    let tools = DATA.tools.filter(t => t.profile === nav.profile && t.subcat === nav.subcat && t.cat === cat.id);
     if (currentFilter !== 'all') tools = tools.filter(t => t.status === currentFilter);
     if (search) tools = tools.filter(t =>
       t.name.toLowerCase().includes(search) ||
@@ -467,8 +767,7 @@ function render() {
       t.tags.some(tag => tag.toLowerCase().includes(search))
     );
 
-    const colorClass = `cat-${cat.id}`;
-    html += `<section class="category ${colorClass}">
+    html += `<section class="category cat-${cat.color}">
       <div class="category-header">
         <div class="category-icon">${cat.emoji}</div>
         <h2 class="category-title">${cat.name}</h2>
@@ -483,51 +782,36 @@ function render() {
       const tag = isLink ? 'a' : 'div';
       const href = isLink ? ` href="${tool.link}" target="_blank"` : '';
 
-      html += `<${tag} class="tool-card"${href} ondblclick="editTool('${tool.id}')">
+      html += `<${tag} class="tool-card"${href}>
         <div class="card-top">
           <div class="tool-emoji">${tool.emoji}</div>
-          <span class="tool-status ${statusClass}">${statusLabel}</span>
+          <div class="card-top-right">
+            <span class="tool-status ${statusClass}">${statusLabel}</span>
+            <button class="btn-gear" onclick="event.preventDefault();event.stopPropagation();editTool('${tool.id}')" title="Edit tool">⚙</button>
+          </div>
         </div>
         <h3>${tool.name}</h3>
         <p>${tool.desc}</p>
-        <div class="tool-tags">
-          ${tool.tags.map(t => `<span class="tool-tag">${t}</span>`).join('')}
-        </div>
+        <div class="tool-tags">${tool.tags.map(t => `<span class="tool-tag">${t}</span>`).join('')}</div>
       </${tag}>`;
     });
 
     html += `<div class="tool-card add-card" onclick="openAddTool('${cat.id}')">
-        <div class="plus">+</div>
-        <span>Add tool</span>
-      </div>
-      </div></section>`;
+        <div class="plus">+</div><span>Add tool</span>
+      </div></div></section>`;
   });
 
   main.innerHTML = html;
-  updateCategorySelect();
 }
 
-// ── FILTERS ──
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
-function filterTools() { render(); }
-
-// ── MODALS ──
-function openModal(type) {
-  document.getElementById(type + 'Modal').classList.add('open');
-}
-function closeModal(type) {
-  document.getElementById(type + 'Modal').classList.remove('open');
-  editingToolId = null;
-}
+// ── TOOL MODAL ──
+function openModal() { document.getElementById('toolModal').classList.add('open'); }
+function closeModal() { document.getElementById('toolModal').classList.remove('open'); editingToolId = null; }
 
 function openAddTool(catId) {
   editingToolId = null;
   document.getElementById('modalTitle').textContent = 'Add New Tool';
+  document.getElementById('btnDelete').classList.add('hidden');
   document.getElementById('fName').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fStatus').value = 'planned';
@@ -536,7 +820,7 @@ function openAddTool(catId) {
   document.getElementById('fEmoji').value = '🔧';
   updateCategorySelect();
   document.getElementById('fCat').value = catId;
-  openModal('tool');
+  openModal();
 }
 
 function editTool(id) {
@@ -544,6 +828,7 @@ function editTool(id) {
   if (!tool) return;
   editingToolId = id;
   document.getElementById('modalTitle').textContent = 'Edit Tool';
+  document.getElementById('btnDelete').classList.remove('hidden');
   document.getElementById('fName').value = tool.name;
   document.getElementById('fDesc').value = tool.desc;
   document.getElementById('fStatus').value = tool.status;
@@ -552,13 +837,15 @@ function editTool(id) {
   document.getElementById('fEmoji').value = tool.emoji;
   updateCategorySelect();
   document.getElementById('fCat').value = tool.cat;
-  openModal('tool');
+  openModal();
 }
 
 function saveTool() {
   const name = document.getElementById('fName').value.trim();
   if (!name) return alert('Name is required');
   const toolData = {
+    profile: nav.profile,
+    subcat: nav.subcat,
     cat: document.getElementById('fCat').value,
     name,
     desc: document.getElementById('fDesc').value.trim(),
@@ -567,7 +854,6 @@ function saveTool() {
     tags: document.getElementById('fTags').value.split(',').map(t => t.trim()).filter(Boolean),
     emoji: document.getElementById('fEmoji').value || '🔧',
   };
-
   if (editingToolId) {
     const idx = DATA.tools.findIndex(t => t.id === editingToolId);
     if (idx >= 0) DATA.tools[idx] = { ...DATA.tools[idx], ...toolData };
@@ -575,38 +861,26 @@ function saveTool() {
     toolData.id = 't' + Date.now();
     DATA.tools.push(toolData);
   }
-
-  saveData(DATA);
-  closeModal('tool');
+  saveData();
+  closeModal();
   render();
 }
 
-function saveCategory() {
-  const name = document.getElementById('catName').value.trim();
-  if (!name) return alert('Name is required');
-  const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const color = document.getElementById('catColor').value;
-  DATA.categories.push({
-    id,
-    name,
-    emoji: document.getElementById('catEmoji').value || '📁',
-    color,
-    cssClass: `cat-${id}`,
-  });
-  saveData(DATA);
-  closeModal('category');
+function deleteTool() {
+  if (!editingToolId) return;
+  if (!confirm('Delete this tool?')) return;
+  DATA.tools = DATA.tools.filter(t => t.id !== editingToolId);
+  saveData();
+  closeModal();
   render();
-  // Inject dynamic colour class
-  const style = document.createElement('style');
-  const accent = `var(--accent-${color})`;
-  const accentDim = `var(--accent-${color}-dim)`;
-  style.textContent = `.cat-${id} .category-icon { background: ${accentDim}; } .cat-${id} .tool-card::before { background: linear-gradient(90deg, ${accent}, transparent); }`;
-  document.head.appendChild(style);
 }
 
 function updateCategorySelect() {
   const sel = document.getElementById('fCat');
-  sel.innerHTML = DATA.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+  if (!nav.profile || !nav.subcat) { sel.innerHTML = ''; return; }
+  const profile = DATA.profiles.find(p => p.id === nav.profile);
+  const subcat = profile.subcategories.find(s => s.id === nav.subcat);
+  sel.innerHTML = subcat.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
 }
 
 // ── CLOCK ──
