@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NADRO Trading Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Bebas+Neue&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080a0e;--bg2:#0d1018;--bg3:#111620;--bg4:#161d28;
+  --border:#1a2535;--border2:#243040;
+  --green:#00e87a;--green2:#00c060;--greenBg:rgba(0,232,122,0.08);
+  --red:#ff3d5a;--redBg:rgba(255,61,90,0.08);
+  --gold:#c9a84c;--goldBg:rgba(201,168,76,0.08);
+  --blue:#4d9fff;--blueBg:rgba(77,159,255,0.08);
+  --text:#d0e4f0;--muted:#4a6a82;--muted2:#6a8a9a;
+  --mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;padding-bottom:60px}
+
+/* HEADER */
+.header{padding:24px 20px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--green)}
+.logo span{color:var(--muted);font-size:14px;font-family:var(--mono);letter-spacing:2px;display:block;margin-top:-4px}
+.header-right{display:flex;align-items:center;gap:10px}
+.upload-btn{background:var(--greenBg);border:1px solid var(--green);color:var(--green);padding:8px 16px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:2px}
+.upload-btn:hover{background:var(--green);color:var(--bg)}
+#file-input{display:none}
+.file-count{font-size:10px;color:var(--muted);letter-spacing:1px}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto}
+.tab{padding:12px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:2px;white-space:nowrap}
+.tab.on{color:var(--green);border-bottom-color:var(--green)}
+
+/* SECTIONS */
+.section{display:none;padding:20px}
+.section.on{display:block}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat.green::before{background:var(--green)}
+.stat.red::before{background:var(--red)}
+.stat.gold::before{background:var(--gold)}
+.stat.blue::before{background:var(--blue)}
+.stat-label{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:700;line-height:1}
+.stat-value.green{color:var(--green)}
+.stat-value.red{color:var(--red)}
+.stat-value.gold{color:var(--gold)}
+.stat-value.blue{color:var(--blue)}
+.stat-sub{font-size:10px;color:var(--muted2);margin-top:4px}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);font-size:10px;color:var(--gold);letter-spacing:3px}
+.card-body{padding:16px}
+
+/* MENTOR ALERT */
+.mentor-box{background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(0,232,122,0.04));border:1px solid rgba(201,168,76,0.25);border-left:3px solid var(--gold);border-radius:8px;padding:16px;margin-bottom:16px}
+.mentor-label{font-size:9px;color:var(--gold);letter-spacing:3px;margin-bottom:8px}
+.mentor-text{font-size:12px;color:var(--text);line-height:1.8}
+.mentor-text li{margin-left:16px;margin-bottom:4px;color:var(--muted2)}
+.mentor-text li span{color:var(--text)}
+
+/* TRADE TABLE */
+.trade-table{width:100%;border-collapse:collapse;font-size:11px}
+.trade-table th{padding:8px 10px;text-align:left;font-size:9px;color:var(--muted);letter-spacing:2px;border-bottom:1px solid var(--border);font-weight:400}
+.trade-table td{padding:9px 10px;border-bottom:1px solid var(--border2)}
+.trade-table tr:last-child td{border-bottom:none}
+.trade-table tr:hover td{background:var(--bg4)}
+.win{color:var(--green)}
+.loss{color:var(--red)}
+.scratch{color:var(--gold)}
+
+/* BAR CHART */
+.bar-wrap{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{font-size:10px;color:var(--muted2);min-width:80px;text-align:right}
+.bar-track{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.bar-val{font-size:10px;min-width:50px;color:var(--text)}
+
+/* PATTERN GRID */
+.pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pattern-card{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:12px}
+.pattern-title{font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px}
+.pattern-val{font-size:18px;font-weight:700;margin-bottom:2px}
+.pattern-desc{font-size:10px;color:var(--muted2);line-height:1.5}
+
+/* EQUITY CURVE */
+#equity-canvas{width:100%;height:180px;display:block}
+
+/* PROGRESS RINGS */
+.rings{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-around;padding:16px 0}
+.ring-wrap{text-align:center}
+.ring-label{font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:8px}
+.ring-val{font-size:13px;font-weight:700;margin-top:2px}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px}
+.empty-icon{font-size:40px;margin-bottom:16px;opacity:0.3}
+.empty-title{font-size:16px;color:var(--muted2);margin-bottom:8px;letter-spacing:2px}
+.empty-sub{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* VERDICT */
+.verdict{display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;letter-spacing:1px;font-weight:700}
+.verdict.pass{background:var(--greenBg);color:var(--green);border:1px solid rgba(0,232,122,0.3)}
+.verdict.fail{background:var(--redBg);color:var(--red);border:1px solid rgba(255,61,90,0.3)}
+.verdict.warn{background:var(--goldBg);color:var(--gold);border:1px solid rgba(201,168,76,0.3)}
+
+/* RESPONSIVE */
+@media(max-width:500px){.stat-value{font-size:18px}.pattern-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">NADRO<span>TRADING DASHBOARD</span></div>
+  <div class="header-right">
+    <span class="file-count" id="file-count">No files loaded</span>
+    <label class="upload-btn" for="file-input">+ LOAD FILES</label>
+    <input type="file" id="file-input" accept=".txt,.csv" multiple>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="switchTab('overview',this)">OVERVIEW</button>
+  <button class="tab" onclick="switchTab('trades',this)">TRADE LOG</button>
+  <button class="tab" onclick="switchTab('patterns',this)">PATTERNS</button>
+  <button class="tab" onclick="switchTab('mentor',this)">MENTOR</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="section on">
+  <div id="overview-content">
+    <div class="empty">
+      <div class="empty-icon">📊</div>
+      <div class="empty-title">LOAD YOUR TRADE FILES</div>
+      <div class="empty-sub">Click "+ LOAD FILES" above and select your Sierra Chart<br>TradeStatistics or TradeActivityLog export files.<br><br>Drop multiple files to see aggregate analysis.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TRADES -->
+<div id="trades" class="section">
+  <div id="trades-content">
+    <div class="empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">NO TRADES LOADED</div>
+      <div class="empty-sub">Load your Sierra Chart export files to see your trade log.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PATTERNS -->
+<div id="patterns" class="section">
+  <div id="patterns-content">
+    <div class="empty">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">NO DATA YET</div>
+      <div class="empty-sub">Load trade files to reveal patterns in your trading behaviour.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MENTOR -->
+<div id="mentor" class="section">
+  <div id="mentor-content">
+    <div class="empty">
+      <div class="empty-icon">🎯</div>
+      <div class="empty-title">MENTOR ANALYSIS</div>
+      <div class="empty-sub">Load your trade files and your mentor will analyse your performance,<br>identify your patterns and give you specific things to fix.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────
+let allSessions = [];
+let allFills = [];
+
+// ─── TAB SWITCHING ────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ─── FILE LOADING ─────────────────────────────────────────
+document.getElementById('file-input').addEventListener('change', function(e) {
+  const files = Array.from(e.target.files);
+  allSessions = []; allFills = [];
+  let pending = files.length;
+  files.forEach(f => {
+    const r = new FileReader();
+    r.onload = ev => {
+      parseFile(ev.target.result, f.name);
+      pending--;
+      if (pending === 0) renderAll();
+    };
+    r.readAsText(f);
+  });
+  document.getElementById('file-count').textContent = files.length + ' file' + (files.length>1?'s':'') + ' loaded';
+});
+
+function parseFile(text, name) {
+  if (text.includes('ActivityType') && text.includes('FillPrice')) {
+    parseFillLog(text, name);
+  } else if (text.includes('Trade Statistics') || text.includes('Closed Trades Profit')) {
+    parseStatFile(text, name);
+  }
+}
+
+function parseFillLog(text, name) {
+  const lines = text.trim().split('\n');
+  const fills = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split('\t');
+    if (cols.length < 16) continue;
+    if (cols[0].trim() !== 'Fills') continue;
+    fills.push({
+      datetime: cols[1]?.trim(),
+      symbol: cols[3]?.trim(),
+      side: cols[8]?.trim(),
+      fillPrice: parseFloat(cols[13]) / 100 || parseFloat(cols[13]),
+      qty: parseInt(cols[9]) || 2,
+      openClose: cols[15]?.trim(),
+      high: parseFloat(cols[19]) / 100 || parseFloat(cols[19]),
+      low: parseFloat(cols[20]) / 100 || parseFloat(cols[20]),
+    });
+  }
+  // pair fills into trades
+  const opens = [];
+  const trades = [];
+  fills.forEach(f => {
+    // fix price scaling if needed
+    let price = f.fillPrice;
+    if (price > 10000) price = price / 100;
+    f.fillPrice = price;
+    if (f.high > 10000) f.high = f.high / 100;
+    if (f.low > 10000) f.low = f.low / 100;
+
+    if (f.openClose === 'Open') {
+      opens.push(f);
+    } else if (f.openClose === 'Close' && opens.length > 0) {
+      const open = opens.shift();
+      const isLong = open.side === 'Buy';
+      const pnl = isLong ? (f.fillPrice - open.fillPrice) * f.qty * 5 : (open.fillPrice - f.fillPrice) * f.qty * 5;
+      const mfe = isLong ? (f.high - open.fillPrice) * f.qty * 5 : (open.fillPrice - f.low) * f.qty * 5;
+      const mae = isLong ? (open.fillPrice - f.low) * f.qty * 5 : (f.high - open.fillPrice) * f.qty * 5;
+      const entryTime = new Date(open.datetime);
+      const exitTime = new Date(f.datetime);
+      const holdMins = Math.round((exitTime - entryTime) / 60000);
+      trades.push({ date: open.datetime?.split(' ')[0], entryTime: open.datetime, exitTime: f.datetime, direction: isLong ? 'Long' : 'Short', entry: open.fillPrice, exit: f.fillPrice, qty: f.qty, pnl: Math.round(pnl), mfe: Math.round(mfe), mae: Math.round(mae), holdMins, source: name });
+    }
+  });
+  allFills.push(...trades);
+}
+
+function parseStatFile(text, name) {
+  const get = (key) => {
+    const re = new RegExp(key + '\\s+([\\-\\d\\.]+)');
+    const m = text.match(re);
+    return m ? parseFloat(m[1]) : null;
+  };
+  const getStr = (key) => {
+    const re = new RegExp(key + '\\s+([\\d:]+)');
+    const m = text.match(re);
+    return m ? m[1] : null;
+  };
+  const dateM = text.match(/Daily Date\s+(\d{4}-\d{2}-\d{2})/);
+  const date = dateM ? dateM[1] : name.replace(/[^0-9\-]/g,'').substring(0,10);
+
+  allSessions.push({
+    date,
+    name,
+    pnl: get('Closed Trades Profit/Loss'),
+    totalTrades: get('Total Trades'),
+    winners: get('Winning Trades'),
+    losers: get('Losing Trades'),
+    winPct: get('Percent Profitable'),
+    avgWin: get('Average Winning Trade'),
+    avgLoss: get('Average Losing Trade'),
+    maxWin: get('Largest Winning Trade'),
+    maxLoss: get('Largest Losing Trade'),
+    avgHoldWin: getStr('Average Time In Winning Trades'),
+    avgHoldLoss: getStr('Average Time In Losing Trades'),
+    maxRunup: get('Maximum Runup'),
+    maxDrawdown: get('Maximum Drawdown'),
+    mfeLongs: get('Maximum FlatToFlat Trade Open Profit'),
+    profitFactor: get('Profit Factor'),
+    expectancy: get('Expectancy'),
+  });
+}
+
+function timeToMins(t) {
+  if (!t) return 0;
+  const parts = t.split(':').map(Number);
+  if (parts.length === 3) return parts[0] * 60 + parts[1];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return 0;
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────
+function renderAll() {
+  const trades = allFills;
+  const sessions = allSessions;
+  const hasFills = trades.length > 0;
+  const hasSessions = sessions.length > 0;
+
+  if (!hasFills && !hasSessions) return;
+
+  // aggregate stats from sessions
+  let totalPnl = 0, totalTrades = 0, totalWins = 0, totalLosses = 0;
+  let totalAvgWin = 0, totalAvgLoss = 0, winCount = 0, lossCount = 0;
+  let bestDay = -Infinity, worstDay = Infinity, maxMFE = 0;
+
+  sessions.forEach(s => {
+    totalPnl += s.pnl || 0;
+    totalTrades += s.totalTrades || 0;
+    totalWins += s.winners || 0;
+    totalLosses += s.losers || 0;
+    if (s.avgWin) { totalAvgWin += s.avgWin; winCount++; }
+    if (s.avgLoss) { totalAvgLoss += s.avgLoss; lossCount++; }
+    if (s.pnl > bestDay) bestDay = s.pnl;
+    if (s.pnl < worstDay) worstDay = s.pnl;
+    if (s.mfeLongs > maxMFE) maxMFE = s.mfeLongs;
+  });
+
+  // from fills if sessions empty
+  if (!hasSessions && hasFills) {
+    trades.forEach(t => {
+      totalPnl += t.pnl;
+      totalTrades++;
+      if (t.pnl > 0) totalWins++;
+      else if (t.pnl < 0) totalLosses++;
+      if (t.pnl > bestDay) bestDay = t.pnl;
+      if (t.pnl < worstDay) worstDay = t.pnl;
+    });
+  }
+
+  const winRate = totalTrades > 0 ? Math.round((totalWins / totalTrades) * 100) : 0;
+  const avgWin = winCount > 0 ? Math.round(totalAvgWin / winCount) : 0;
+  const avgLoss = lossCount > 0 ? Math.round(totalAvgLoss / lossCount) : 0;
+  const rr = avgLoss !== 0 ? Math.abs((avgWin / avgLoss)).toFixed(2) : '—';
+
+  renderOverview(totalPnl, totalTrades, totalWins, totalLosses, winRate, avgWin, avgLoss, rr, bestDay, worstDay, sessions, trades);
+  renderTrades(trades, sessions);
+  renderPatterns(sessions, trades, winRate, avgWin, avgLoss);
+  renderMentor(totalPnl, winRate, avgWin, avgLoss, rr, sessions, trades);
+}
+
+// ─── OVERVIEW ─────────────────────────────────────────────
+function renderOverview(totalPnl, totalTrades, totalWins, totalLosses, winRate, avgWin, avgLoss, rr, bestDay, worstDay, sessions, trades) {
+  const pnlColor = totalPnl >= 0 ? 'green' : 'red';
+  const pnlSign = totalPnl >= 0 ? '+' : '';
+
+  // equity curve from sessions
+  let equityHtml = '';
+  if (sessions.length > 1) {
+    equityHtml = `
+    <div class="card">
+      <div class="card-header">EQUITY CURVE</div>
+      <div class="card-body" style="padding:12px">
+        <canvas id="equity-canvas" height="150"></canvas>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('overview-content').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat ${pnlColor}">
+        <div class="stat-label">NET P&L</div>
+        <div class="stat-value ${pnlColor}">${pnlSign}$${Math.abs(totalPnl).toLocaleString()}</div>
+        <div class="stat-sub">${sessions.length || 1} session${sessions.length!==1?'s':''}</div>
+      </div>
+      <div class="stat ${winRate>=55?'green':winRate>=45?'gold':'red'}">
+        <div class="stat-label">WIN RATE</div>
+        <div class="stat-value ${winRate>=55?'green':winRate>=45?'gold':'red'}">${winRate}%</div>
+        <div class="stat-sub">${totalWins}W / ${totalLosses}L</div>
+      </div>
+      <div class="stat gold">
+        <div class="stat-label">TOTAL TRADES</div>
+        <div class="stat-value gold">${totalTrades}</div>
+        <div class="stat-sub">across all sessions</div>
+      </div>
+      <div class="stat ${parseFloat(rr)>=1.5?'green':parseFloat(rr)>=1?'gold':'red'}">
+        <div class="stat-label">AVG W:L RATIO</div>
+        <div class="stat-value ${parseFloat(rr)>=1.5?'green':parseFloat(rr)>=1?'gold':'red'}">${rr}:1</div>
+        <div class="stat-sub">avg win vs avg loss</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-label">AVG WINNER</div>
+        <div class="stat-value green">+$${Math.abs(avgWin)}</div>
+        <div class="stat-sub">per winning trade</div>
+      </div>
+      <div class="stat red">
+        <div class="stat-label">AVG LOSER</div>
+        <div class="stat-value red">-$${Math.abs(avgLoss)}</div>
+        <div class="stat-sub">per losing trade</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-label">BEST DAY</div>
+        <div class="stat-value green">+$${bestDay===Infinity?0:Math.abs(bestDay)}</div>
+        <div class="stat-sub">single session</div>
+      </div>
+      <div class="stat red">
+        <div class="stat-label">WORST DAY</div>
+        <div class="stat-value red">-$${worstDay===Infinity?0:Math.abs(worstDay)}</div>
+        <div class="stat-sub">single session</div>
+      </div>
+    </div>
+    ${equityHtml}
+    ${renderSessionTable(sessions)}
+  `;
+
+  // draw equity curve
+  if (sessions.length > 1) {
+    setTimeout(() => drawEquity(sessions), 100);
+  }
+}
+
+function renderSessionTable(sessions) {
+  if (!sessions.length) return '';
+  const rows = sessions.map(s => {
+    const pnlColor = s.pnl >= 0 ? 'win' : 'loss';
+    const sign = s.pnl >= 0 ? '+' : '';
+    const wr = s.totalTrades > 0 ? Math.round((s.winners/s.totalTrades)*100) : 0;
+    return `<tr>
+      <td>${s.date}</td>
+      <td>${s.totalTrades||0}</td>
+      <td>${s.winners||0}W / ${s.losers||0}L</td>
+      <td>${wr}%</td>
+      <td class="${pnlColor}">${sign}$${Math.abs(s.pnl||0)}</td>
+      <td><span class="verdict ${s.pnl>0?'pass':s.pnl===0?'warn':'fail'}">${s.pnl>0?'PROFIT':s.pnl===0?'SCRATCH':'LOSS'}</span></td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="card">
+    <div class="card-header">SESSION BREAKDOWN</div>
+    <div class="card-body" style="padding:0;overflow-x:auto">
+      <table class="trade-table">
+        <tr>
+          <th>DATE</th><th>TRADES</th><th>W/L</th><th>WIN%</th><th>P&L</th><th>RESULT</th>
+        </tr>
+        ${rows}
+      </table>
+    </div>
+  </div>`;
+}
+
+function drawEquity(sessions) {
+  const canvas = document.getElementById('equity-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 150;
+  const W = canvas.width, H = canvas.height;
+  const pad = {t:10,r:10,b:30,l:50};
+
+  let cum = 0;
+  const points = [{x:0, y:0}];
+  sessions.forEach((s,i) => {
+    cum += (s.pnl||0);
+    points.push({x:i+1, y:cum});
+  });
+
+  const maxY = Math.max(...points.map(p=>p.y), 100);
+  const minY = Math.min(...points.map(p=>p.y), -100);
+  const rangeY = maxY - minY || 1;
+  const rangeX = points.length - 1 || 1;
+
+  const px = (i) => pad.l + (i/rangeX)*(W-pad.l-pad.r);
+  const py = (v) => pad.t + (1-(v-minY)/rangeY)*(H-pad.t-pad.b);
+
+  // grid lines
+  ctx.strokeStyle = '#1a2535';
+  ctx.lineWidth = 0.5;
+  for (let g=0; g<=4; g++) {
+    const y = pad.t + (g/4)*(H-pad.t-pad.b);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    const val = maxY - (g/4)*rangeY;
+    ctx.fillStyle = '#4a6a82';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText((val>=0?'+':'')+Math.round(val), pad.l-4, y+3);
+  }
+
+  // zero line
+  ctx.strokeStyle = '#2a3a50';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l, py(0)); ctx.lineTo(W-pad.r, py(0)); ctx.stroke();
+
+  // fill under curve
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  const finalY = points[points.length-1].y;
+  grad.addColorStop(0, finalY>=0 ? 'rgba(0,232,122,0.2)' : 'rgba(255,61,90,0.2)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.moveTo(px(0), py(0));
+  points.forEach((p,i) => ctx.lineTo(px(i), py(p.y)));
+  ctx.lineTo(px(points.length-1), py(0));
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // curve
+  ctx.strokeStyle = finalY >= 0 ? '#00e87a' : '#ff3d5a';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  points.forEach((p,i) => { if(i===0) ctx.moveTo(px(i),py(p.y)); else ctx.lineTo(px(i),py(p.y)); });
+  ctx.stroke();
+
+  // dots
+  points.forEach((p,i) => {
+    ctx.fillStyle = p.y>=0 ? '#00e87a' : '#ff3d5a';
+    ctx.beginPath(); ctx.arc(px(i),py(p.y),3,0,Math.PI*2); ctx.fill();
+  });
+}
+
+// ─── TRADES ───────────────────────────────────────────────
+function renderTrades(trades, sessions) {
+  if (!trades.length) {
+    // show sessions in table format
+    if (sessions.length) {
+      document.getElementById('trades-content').innerHTML = `
+        <div class="mentor-box">
+          <div class="mentor-label">INFO</div>
+          <div class="mentor-text">TradeStatistics files loaded — showing session summaries. For individual trade breakdown, load TradeActivityLog files.</div>
+        </div>
+        ${renderSessionTable(sessions)}`;
+    }
+    return;
+  }
+
+  const rows = trades.map((t,i) => {
+    const pnlClass = t.pnl > 0 ? 'win' : t.pnl < 0 ? 'loss' : 'scratch';
+    const dirColor = t.direction === 'Long' ? 'color:var(--green)' : 'color:var(--red)';
+    const mfeRatio = t.pnl !== 0 && t.mfe !== 0 ? (t.pnl / t.mfe * 100).toFixed(0) + '%' : '—';
+    return `<tr>
+      <td>${t.date}</td>
+      <td style="${dirColor}">${t.direction}</td>
+      <td>${t.entry?.toFixed(2)||'—'}</td>
+      <td>${t.exit?.toFixed(2)||'—'}</td>
+      <td class="${pnlClass}">${t.pnl>=0?'+':''}$${t.pnl}</td>
+      <td style="color:var(--green)">+$${t.mfe||0}</td>
+      <td style="color:var(--red)">-$${Math.abs(t.mae||0)}</td>
+      <td>${t.holdMins||0}m</td>
+      <td style="color:var(--muted2)">${mfeRatio}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('trades-content').innerHTML = `
+    <div class="card">
+      <div class="card-header">INDIVIDUAL TRADES — ${trades.length} TOTAL</div>
+      <div class="card-body" style="padding:0;overflow-x:auto">
+        <table class="trade-table">
+          <tr>
+            <th>DATE</th><th>DIR</th><th>ENTRY</th><th>EXIT</th>
+            <th>P&L</th><th>MFE</th><th>MAE</th><th>HOLD</th><th>CAPTURE%</th>
+          </tr>
+          ${rows}
+        </table>
+      </div>
+    </div>
+    <div class="mentor-box">
+      <div class="mentor-label">CAPTURE% EXPLAINED</div>
+      <div class="mentor-text">Capture% = how much of the available move you captured. 100% = held to full MFE. Below 50% = exiting early. This is your key metric to improve.</div>
+    </div>`;
+}
+
+// ─── PATTERNS ─────────────────────────────────────────────
+function renderPatterns(sessions, trades, winRate, avgWin, avgLoss) {
+  const hasFills = trades.length > 0;
+  const hasSessions = sessions.length > 0;
+
+  // hold time analysis
+  let avgHoldWinMins = 0, avgHoldLossMins = 0, hwCount = 0, hlCount = 0;
+  sessions.forEach(s => {
+    const hw = timeToMins(s.avgHoldWin);
+    const hl = timeToMins(s.avgHoldLoss);
+    if (hw > 0) { avgHoldWinMins += hw; hwCount++; }
+    if (hl > 0) { avgHoldLossMins += hl; hlCount++; }
+  });
+  avgHoldWinMins = hwCount > 0 ? Math.round(avgHoldWinMins/hwCount) : 0;
+  avgHoldLossMins = hlCount > 0 ? Math.round(avgHoldLossMins/hlCount) : 0;
+
+  if (hasFills) {
+    const winFills = trades.filter(t=>t.pnl>0);
+    const lossFills = trades.filter(t=>t.pnl<0);
+    avgHoldWinMins = winFills.length > 0 ? Math.round(winFills.reduce((a,t)=>a+t.holdMins,0)/winFills.length) : avgHoldWinMins;
+    avgHoldLossMins = lossFills.length > 0 ? Math.round(lossFills.reduce((a,t)=>a+t.holdMins,0)/lossFills.length) : avgHoldLossMins;
+  }
+
+  const holdVerdict = avgHoldWinMins > avgHoldLossMins ? 'pass' : 'fail';
+  const holdMsg = avgHoldWinMins > avgHoldLossMins
+    ? 'Holding winners longer than losers ✓'
+    : `Holding losers ${avgHoldLossMins-avgHoldWinMins}m longer than winners — cutting winners early`;
+
+  // RR ratio
+  const rrNum = avgLoss !== 0 ? Math.abs(avgWin/avgLoss) : 0;
+  const rrVerdict = rrNum >= 1.5 ? 'pass' : rrNum >= 1 ? 'warn' : 'fail';
+
+  // Long vs short bias
+  let longPnl = 0, shortPnl = 0, longTrades = 0, shortTrades = 0;
+  sessions.forEach(s => {
+    // approximate from files — sessions don't always split by direction
+  });
+  if (hasFills) {
+    trades.forEach(t => {
+      if (t.direction==='Long'){longPnl+=t.pnl;longTrades++;}
+      else{shortPnl+=t.pnl;shortTrades++;}
+    });
+  }
+
+  // bar chart data
+  const bars = [
+    {label:'Win rate', val:winRate, max:100, color:'var(--green)', target:55},
+    {label:'Avg hold win', val:avgHoldWinMins, max:Math.max(avgHoldWinMins,avgHoldLossMins,60), color:'var(--green)', target:null},
+    {label:'Avg hold loss', val:avgHoldLossMins, max:Math.max(avgHoldWinMins,avgHoldLossMins,60), color:'var(--red)', target:null},
+    {label:'R:R ratio', val:Math.min(rrNum*33,100), max:100, color:rrNum>=1.5?'var(--green)':rrNum>=1?'var(--gold)':'var(--red)', target:null},
+  ];
+
+  const barRows = bars.map(b => `
+    <div class="bar-row">
+      <div class="bar-label">${b.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.min(b.val/b.max*100,100)}%;background:${b.color}"></div></div>
+      <div class="bar-val">${b.label.includes('hold')?b.val+'m':b.label.includes('R:R')?rrNum.toFixed(2)+':1':b.val+'%'}</div>
+    </div>`).join('');
+
+  document.getElementById('patterns-content').innerHTML = `
+    <div class="card">
+      <div class="card-header">KEY METRICS VISUAL</div>
+      <div class="card-body">
+        <div class="bar-wrap">${barRows}</div>
+      </div>
+    </div>
+
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <div class="pattern-title">HOLD TIME — WINS</div>
+        <div class="pattern-val" style="color:var(--green)">${avgHoldWinMins}m</div>
+        <div class="pattern-desc">Average time held on winning trades</div>
+      </div>
+      <div class="pattern-card">
+        <div class="pattern-title">HOLD TIME — LOSSES</div>
+        <div class="pattern-val" style="color:var(--red)">${avgHoldLossMins}m</div>
+        <div class="pattern-desc">Average time held on losing trades</div>
+      </div>
+      <div class="pattern-card">
+        <div class="pattern-title">HOLD TIME VERDICT</div>
+        <div class="pattern-val"><span class="verdict ${holdVerdict}">${holdVerdict==='pass'?'CORRECT':'PROBLEM'}</span></div>
+        <div class="pattern-desc" style="margin-top:8px">${holdMsg}</div>
+      </div>
+      <div class="pattern-card">
+        <div class="pattern-title">R:R VERDICT</div>
+        <div class="pattern-val"><span class="verdict ${rrVerdict}">${rrVerdict==='pass'?'GOOD':rrVerdict==='warn'?'MARGINAL':'PROBLEM'}</span></div>
+        <div class="pattern-desc" style="margin-top:8px">
+          Avg win: +$${Math.abs(avgWin)}<br>
+          Avg loss: -$${Math.abs(avgLoss)}<br>
+          Ratio: ${rrNum.toFixed(2)}:1 ${rrNum>=1.5?'✓':rrNum>=1?'(need 1.5+)':'(need 1.0+)'}
+        </div>
+      </div>
+    </div>
+
+    ${hasFills && (longTrades>0||shortTrades>0) ? `
+    <div class="card">
+      <div class="card-header">LONG VS SHORT PERFORMANCE</div>
+      <div class="card-body">
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <div class="pattern-title">LONG TRADES</div>
+            <div class="pattern-val" style="color:var(--green)">${longTrades}</div>
+            <div class="pattern-desc">Net P&L: ${longPnl>=0?'+':''}$${longPnl}</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-title">SHORT TRADES</div>
+            <div class="pattern-val" style="color:var(--red)">${shortTrades}</div>
+            <div class="pattern-desc">Net P&L: ${shortPnl>=0?'+':''}$${shortPnl}</div>
+          </div>
+        </div>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+// ─── MENTOR ───────────────────────────────────────────────
+function renderMentor(totalPnl, winRate, avgWin, avgLoss, rr, sessions, trades) {
+  const rrNum = parseFloat(rr) || 0;
+  const findings = [];
+  const strengths = [];
+  const actions = [];
+
+  // Hold time analysis
+  let avgHoldWinMins = 0, avgHoldLossMins = 0, hwCount = 0, hlCount = 0;
+  sessions.forEach(s => {
+    const hw = timeToMins(s.avgHoldWin);
+    const hl = timeToMins(s.avgHoldLoss);
+    if (hw > 0) { avgHoldWinMins += hw; hwCount++; }
+    if (hl > 0) { avgHoldLossMins += hl; hlCount++; }
+  });
+  avgHoldWinMins = hwCount > 0 ? Math.round(avgHoldWinMins/hwCount) : 0;
+  avgHoldLossMins = hlCount > 0 ? Math.round(avgHoldLossMins/hlCount) : 0;
+
+  if (trades.length > 0) {
+    const wins = trades.filter(t=>t.pnl>0);
+    const losses = trades.filter(t=>t.pnl<0);
+    if (wins.length) avgHoldWinMins = Math.round(wins.reduce((a,t)=>a+t.holdMins,0)/wins.length);
+    if (losses.length) avgHoldLossMins = Math.round(losses.reduce((a,t)=>a+t.holdMins,0)/losses.length);
+
+    // MFE capture rate
+    const totalMFE = trades.reduce((a,t)=>a+(t.mfe||0),0);
+    const capturedPnl = trades.filter(t=>t.pnl>0).reduce((a,t)=>a+t.pnl,0);
+    const captureRate = totalMFE > 0 ? Math.round(capturedPnl/totalMFE*100) : 0;
+
+    if (captureRate < 50) {
+      findings.push(`<li><span>MFE capture rate is ${captureRate}%.</span> On winning trades you are leaving significant money on the table. Full MFE available was $${totalMFE} but you captured $${capturedPnl}. This is the early exit pattern. Hold to destination.</li>`);
+    }
+  }
+
+  // Win rate
+  if (winRate >= 60) strengths.push(`<li><span>${winRate}% win rate</span> — finding valid setups and entering correctly. Above average.</li>`);
+  else if (winRate >= 45) findings.push(`<li><span>${winRate}% win rate</span> — acceptable but needs improvement. Target 55%+ with NADRO.</li>`);
+  else findings.push(`<li><span>${winRate}% win rate</span> — below target. You are either entering on incomplete four box checks or fighting the narrative.</li>`);
+
+  // R:R
+  if (rrNum >= 1.5) strengths.push(`<li><span>${rrNum.toFixed(2)}:1 R:R ratio</span> — winning trades are bigger than losing trades. Correct.</li>`);
+  else if (rrNum >= 1) findings.push(`<li><span>${rrNum.toFixed(2)}:1 R:R ratio</span> — marginal. Winners need to be at least 1.5x larger than losers. This means holding to destination.</li>`);
+  else findings.push(`<li><span>${rrNum.toFixed(2)}:1 R:R ratio</span> — critical problem. Your average loss ($$${Math.abs(avgLoss)}) is bigger than your average win ($${Math.abs(avgWin)}). Even with good win rate you will lose money long term.</li>`);
+
+  // Hold time
+  if (avgHoldWinMins > 0 && avgHoldLossMins > 0) {
+    if (avgHoldLossMins > avgHoldWinMins) {
+      findings.push(`<li><span>Hold time problem detected.</span> Winning trades held ${avgHoldWinMins}m average. Losing trades held ${avgHoldLossMins}m average. You are cutting winners and holding losers. This is the single most destructive pattern in trading. Stop is placed before entry and never moved against you. Winners hold to destination.</li>`);
+    } else {
+      strengths.push(`<li><span>Hold time correct</span> — holding winners (${avgHoldWinMins}m) longer than losers (${avgHoldLossMins}m). This is the right behaviour.</li>`);
+    }
+  }
+
+  // Overall P&L
+  if (totalPnl > 0) strengths.push(`<li><span>Net positive P&L +$${totalPnl}</span> across these sessions. Edge is real. Now make it bigger by fixing the specific issues below.</li>`);
+  else findings.push(`<li><span>Net negative P&L -$${Math.abs(totalPnl)}</span> — the edge is not yet showing in the numbers. This is normal at your stage. The fixes below will change this.</li>`);
+
+  // Actions
+  if (rrNum < 1.5) actions.push('Hold every trade to its original destination. No early exits. Track how much MFE you left on the table each session in Notion.');
+  if (avgHoldLossMins > avgHoldWinMins) actions.push('Stop is non-negotiable. Place it before entry based on the counter-rotation swing and never touch it. If it hits, it hits.');
+  if (winRate < 55) actions.push('Before every entry say out loud: Narrative check — DVA check — Acceptance check — Rhythm check. All four green or no trade.');
+  actions.push('After every session write one sentence: what was the market doing and did I read it correctly? This builds pattern recognition faster than anything else.');
+  actions.push('Record yourself trading with voice. Review the audio. The gap between what you think you said and what you actually said is enormous.');
+
+  const sessionCount = sessions.length || (trades.length > 0 ? 1 : 0);
+  const overallGrade = totalPnl > 0 && rrNum >= 1.5 && winRate >= 55 ? 'DEVELOPING PROFESSIONAL' :
+    totalPnl > 0 || winRate >= 50 ? 'DEVELOPING TRADER' : 'EARLY STAGE';
+  const gradeColor = overallGrade === 'DEVELOPING PROFESSIONAL' ? 'var(--green)' : overallGrade === 'DEVELOPING TRADER' ? 'var(--gold)' : 'var(--red)';
+
+  document.getElementById('mentor-content').innerHTML = `
+    <div class="card">
+      <div class="card-header">OVERALL ASSESSMENT — ${sessionCount} SESSION${sessionCount!==1?'S':''} ANALYSED</div>
+      <div class="card-body" style="text-align:center;padding:20px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:${gradeColor}">${overallGrade}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:2px">based on ${sessionCount} session${sessionCount!==1?'s':''} of data</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.7">More sessions = more accurate assessment.<br>Load all your backtest files for complete picture.</div>
+      </div>
+    </div>
+
+    ${findings.length ? `
+    <div class="mentor-box" style="border-left-color:var(--red)">
+      <div class="mentor-label" style="color:var(--red)">PROBLEMS IDENTIFIED — ${findings.length}</div>
+      <div class="mentor-text"><ul>${findings.join('')}</ul></div>
+    </div>` : ''}
+
+    ${strengths.length ? `
+    <div class="mentor-box" style="border-left-color:var(--green)">
+      <div class="mentor-label" style="color:var(--green)">STRENGTHS CONFIRMED — ${strengths.length}</div>
+      <div class="mentor-text"><ul>${strengths.join('')}</ul></div>
+    </div>` : ''}
+
+    <div class="mentor-box">
+      <div class="mentor-label">YOUR ${actions.length} ACTIONS — IN ORDER OF PRIORITY</div>
+      <div class="mentor-text"><ol style="padding-left:16px">${actions.map(a=>`<li style="margin-bottom:10px;color:var(--text)">${a}</li>`).join('')}</ol></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">WHAT A TOP TIER TRADER SEES IN YOUR DATA</div>
+      <div class="card-body" style="font-size:12px;line-height:1.9;color:var(--muted2)">
+        The data shows someone who understands setups well enough to find winning trades but has not yet internalised the discipline to hold them. This is the most common failure mode at your stage — and the most fixable.<br><br>
+        The good news: your win rate suggests the entries are correct. The bad news: you are systematically giving back profits through early exits and holding losers. These are not knowledge problems. They are behavioural patterns that only repetition and evidence can fix.<br><br>
+        Load every session file you have. Build the dataset. In 30 sessions the picture becomes clear. In 50 sessions you cannot lie to yourself anymore. The data tells the truth even when your memory does not.<br><br>
+        <span style="color:var(--gold)">Keep loading files. Keep trading the process. The numbers will follow.</span>
+      </div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
