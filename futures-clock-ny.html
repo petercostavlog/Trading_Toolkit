@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ES Futures Clock — London / New York</title>
+<style>
+  :root{
+    --bg:#080b10;
+    --panel:#0e141c;
+    --panel2:#101a25;
+    --line:#1b2838;
+    --text:#cdd9e5;
+    --dim:#61748a;
+    --london:#38bdf8;   /* cyan  */
+    --ny:#f5b13d;       /* gold  */
+    --green:#2ee08c;    /* open / RTH */
+    --amber:#f5b83d;    /* overnight / next */
+    --red:#ff5f6d;      /* break / closed */
+    --title:#2ee08c;
+    --mono:'JetBrains Mono','SF Mono','Menlo','Consolas',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--mono)}
+  body{padding:26px 16px 60px;line-height:1.4;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  /* header */
+  header{text-align:center;margin-bottom:26px}
+  h1{margin:0;font-size:clamp(22px,4.4vw,40px);letter-spacing:.28em;color:var(--title);
+     text-shadow:0 0 18px rgba(46,224,140,.35)}
+  .sub{margin-top:8px;font-size:12px;letter-spacing:.34em;color:var(--dim)}
+  .sub b{color:var(--london)}
+  .sub i{color:var(--ny);font-style:normal}
+
+  /* clocks */
+  .clocks{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .clock{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+         padding:20px 16px;text-align:center;position:relative;overflow:hidden}
+  .clock::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .clock.london::before{background:var(--london);box-shadow:0 0 16px var(--london)}
+  .clock.ny::before{background:var(--ny);box-shadow:0 0 16px var(--ny)}
+  .clock .zone{font-size:12px;letter-spacing:.24em;color:var(--dim)}
+  .clock.london .zone{color:var(--london)}
+  .clock.ny .zone{color:var(--ny)}
+  .clock .time{font-size:clamp(30px,7vw,52px);font-weight:700;font-variant-numeric:tabular-nums;
+               letter-spacing:.04em;margin:6px 0 4px}
+  .clock .date{font-size:13px;color:var(--dim)}
+
+  /* status banner */
+  .banner{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:22px;
+          background:var(--panel);transition:border-color .3s}
+  .banner .row1{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .banner .phase{font-size:clamp(15px,2.6vw,19px);font-weight:700;letter-spacing:.05em}
+  .banner .count{font-size:clamp(14px,2.4vw,18px);font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
+  .banner .count small{color:var(--dim);font-weight:400}
+  .bar{height:5px;border-radius:4px;background:#0a1017;margin-top:12px;overflow:hidden}
+  .bar>span{display:block;height:100%;width:0;transition:width .9s linear}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .card h2{margin:0;padding:14px 16px;font-size:12px;letter-spacing:.24em;color:var(--dim);
+           border-bottom:1px solid var(--line);font-weight:600}
+
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:11px 12px;text-align:left;font-size:14px}
+  thead th{font-size:11px;letter-spacing:.12em;color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
+  th.lon,td.lon{color:var(--london)}
+  th.ny,td.ny{color:var(--ny)}
+  tbody tr{border-bottom:1px solid #131e2b}
+  tbody tr:last-child{border-bottom:0}
+  .sess td:first-child{font-weight:700;letter-spacing:.02em}
+  tr.next{background:rgba(245,184,61,.08)}
+  tr.next td:first-child{color:var(--amber)}
+
+  .badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;letter-spacing:.1em;font-weight:700}
+  .b-live{color:#03110b;background:var(--green)}
+  .b-next{color:var(--amber);border:1px solid rgba(245,184,61,.5);background:rgba(245,184,61,.08)}
+  .b-off{color:var(--dim);border:1px solid var(--line)}
+
+  /* conversion table */
+  .conv{max-height:none}
+  .conv td{padding:8px 12px;font-size:13px}
+  .conv .arrow{color:var(--dim);padding:0 4px}
+  .conv tr.now{background:rgba(56,189,248,.14);outline:1px solid rgba(56,189,248,.35)}
+  .conv tr.now td:first-child{color:#fff;font-weight:700}
+  .conv tr.rth td{background-clip:padding-box}
+  .conv tr.rth{box-shadow:inset 3px 0 0 var(--green)}
+  .conv tr.now.rth{box-shadow:inset 3px 0 0 var(--green),inset 0 0 0 99px rgba(56,189,248,.10)}
+  .conv .dshift{color:var(--dim);font-size:11px;margin-left:4px}
+  .nowtag{color:var(--london);font-size:11px;letter-spacing:.1em;margin-left:6px}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;padding:12px 16px;font-size:12px;color:var(--dim);border-top:1px solid var(--line)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+  footer{text-align:center;color:var(--dim);font-size:12px;margin-top:26px;line-height:1.7}
+  footer b{color:var(--ny)}
+
+  @media (max-width:760px){
+    .grid{grid-template-columns:1fr}
+    h1{letter-spacing:.16em}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important}
+  }
+  a:focus-visible,tr:focus-visible{outline:2px solid var(--london);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ES&nbsp;FUTURES&nbsp;CLOCK</h1>
+    <div class="sub">CME&nbsp;·&nbsp;<b>LONDON</b>&nbsp;·&nbsp;<i>NEW&nbsp;YORK</i></div>
+  </header>
+
+  <section class="clocks">
+    <div class="clock london">
+      <div class="zone" id="lon-zone">LONDON</div>
+      <div class="time" id="lon-time">--:--:--</div>
+      <div class="date" id="lon-date">—</div>
+    </div>
+    <div class="clock ny">
+      <div class="zone" id="ny-zone">NEW YORK</div>
+      <div class="time" id="ny-time">--:--:--</div>
+      <div class="date" id="ny-date">—</div>
+    </div>
+  </section>
+
+  <section class="banner" id="banner">
+    <div class="row1">
+      <span class="phase" id="phase">—</span>
+      <span class="count" id="count">—</span>
+    </div>
+    <div class="bar"><span id="bar"></span></div>
+  </section>
+
+  <div class="grid">
+    <!-- SESSION TIMES -->
+    <div class="card">
+      <h2>SESSION TIMES · ES</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th class="lon">London</th>
+            <th class="ny">New York</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="sess-body"><!-- js --></tbody>
+      </table>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--green)"></i>pit / RTH open</span>
+        <span><i class="dot" style="background:var(--amber)"></i>overnight / next</span>
+        <span><i class="dot" style="background:var(--red)"></i>break / closed</span>
+      </div>
+    </div>
+
+    <!-- CONVERSION TABLE -->
+    <div class="card">
+      <h2>LONDON → NEW YORK · 24H</h2>
+      <table class="conv">
+        <thead>
+          <tr>
+            <th class="lon">London</th>
+            <th></th>
+            <th class="ny">New York</th>
+          </tr>
+        </thead>
+        <tbody id="conv-body"><!-- js --></tbody>
+      </table>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--london)"></i>ora curentă</span>
+        <span><i class="dot" style="background:var(--green)"></i>sesiunea US cash (RTH)</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ES (Globex) se închide zilnic <b>17:00 NY</b> — redeschide <b>18:00 NY</b> · pauză de 1h ·
+    weekend închis vineri 17:00 → duminică 18:00 NY<br>
+    Fusuri reale (DST automat). Nu e sfat de investiții.
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const WD = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+
+  // --- read wall-clock parts for a timezone ---
+  function zoned(tz){
+    const now = new Date();
+    const p = {};
+    new Intl.DateTimeFormat('en-GB',{
+      timeZone:tz, hourCycle:'h23',
+      weekday:'short', day:'2-digit', month:'short',
+      hour:'2-digit', minute:'2-digit', second:'2-digit'
+    }).formatToParts(now).forEach(x => p[x.type] = x.value);
+    let h = parseInt(p.hour,10); if (h === 24) h = 0;
+    return { h, m:+p.minute, s:+p.second, wd:WD[p.weekday], weekday:p.weekday, day:p.day, month:p.month };
+  }
+
+  // --- ES session model, all times in NY (ET) minutes-of-day ---
+  const RTH_OPEN = 9*60+30, RTH_CLOSE = 16*60, ETH_CLOSE = 17*60, GLOBEX = 18*60;
+  const WEEK = 7*1440;
+
+  // weekly boundaries: [minute-of-week, state-that-begins-here]
+  const B = [];
+  B.push([0*1440 + GLOBEX, 'OVERNIGHT']);          // Sun 18:00 — week opens
+  for (let d = 1; d <= 5; d++){                      // Mon..Fri
+    B.push([d*1440 + RTH_OPEN,  'RTH']);
+    B.push([d*1440 + RTH_CLOSE, 'AFTERHOURS']);
+    if (d < 5){
+      B.push([d*1440 + ETH_CLOSE, 'BREAK']);
+      B.push([d*1440 + GLOBEX,    'OVERNIGHT']);
+    } else {
+      B.push([d*1440 + ETH_CLOSE, 'WEEKEND']);       // Fri 17:00 — weekend
+    }
+  }
+  B.sort((a,b) => a[0]-b[0]);
+
+  const PHASE = {
+    RTH:        { label:'RTH · DAY SESSION',   color:'var(--green)', tag:'pit open' },
+    AFTERHOURS: { label:'AFTER-HOURS · GLOBEX',color:'var(--amber)', tag:'pit closed' },
+    BREAK:      { label:'MAINTENANCE BREAK',   color:'var(--red)',   tag:'closed 1h' },
+    OVERNIGHT:  { label:'OVERNIGHT · GLOBEX',  color:'var(--amber)', tag:'pit closed' },
+    WEEKEND:    { label:'WEEKEND · CLOSED',    color:'var(--red)',   tag:'market closed' }
+  };
+  // which named event the countdown points to, keyed by the NEXT phase
+  const NEXT_EVENT = {
+    RTH:'Pit opens', AFTERHOURS:'Pit closes', BREAK:'ETH closes',
+    OVERNIGHT:'Globex reopens', WEEKEND:'Weekend close'
+  };
+
+  function sessionNow(ny){
+    const mow = ny.wd*1440 + ny.h*60 + ny.m;         // minute of week
+    let i = -1;
+    for (let k = 0; k < B.length; k++){ if (B[k][0] <= mow) i = k; }
+    // before first boundary -> carry last phase across the wrap
+    const cur  = (i === -1) ? B[B.length-1] : B[i];
+    const nextI = (i === -1) ? 0 : (i+1) % B.length;
+    const next  = B[nextI];
+
+    const startMow = (i === -1) ? cur[0] - WEEK : cur[0];
+    let endMow = next[0]; if (endMow <= mow) endMow += WEEK;
+
+    const nowSec   = mow*60 + ny.s;
+    const startSec = startMow*60;
+    const endSec   = endMow*60;
+    const remSec   = endSec - nowSec;
+    const frac     = Math.min(1, Math.max(0, (nowSec - startSec) / (endSec - startSec)));
+
+    let eventName = NEXT_EVENT[next[1]];
+    if (cur[1] === 'WEEKEND' && next[1] === 'OVERNIGHT') eventName = 'Week opens';
+
+    return { state: cur[1], remSec, frac, eventName };
+  }
+
+  // --- helpers ---
+  const pad = n => String(n).padStart(2,'0');
+  function hms(sec){
+    sec = Math.max(0, Math.floor(sec));
+    const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+    if (h > 0) return `${h}h ${pad(m)}m ${pad(s)}s`;
+    if (m > 0) return `${m}m ${pad(s)}s`;
+    return `${s}s`;
+  }
+  // London↔NY offset in minutes (London ahead of NY, normally +300)
+  function offsetMin(lon, ny){
+    const raw = (lon.h*60+lon.m) - (ny.h*60+ny.m);
+    return ((raw % 1440) + 1440) % 1440;   // ~300
+  }
+  // add offset to a NY minute-of-day -> London string
+  function nyToLondon(nyMin, off){
+    let t = (nyMin + off) % 1440; if (t < 0) t += 1440;
+    return `${pad(Math.floor(t/60))}:${pad(t%60)}`;
+  }
+
+  // --- session table rows (fixed NY times) ---
+  const SESSIONS = [
+    { key:'OVERNIGHT',  name:'Globex reopen', ny:GLOBEX    },
+    { key:'RTH',        name:'Pit opens',     ny:RTH_OPEN  },
+    { key:'AFTERHOURS', name:'Pit closes',    ny:RTH_CLOSE },
+    { key:'BREAK',      name:'ETH closes',    ny:ETH_CLOSE }
+  ];
+
+  function badge(state){
+    if (state === 'RTH')  return '<span class="badge b-live">LIVE</span>';
+    if (state === 'BREAK' || state === 'WEEKEND') return '<span class="badge b-off">CLOSED</span>';
+    return '<span class="badge b-off">—</span>';
+  }
+
+  const $ = id => document.getElementById(id);
+
+  function render(){
+    const lon = zoned('Europe/London');
+    const ny  = zoned('America/New_York');
+
+    // clocks
+    $('lon-zone').textContent = lonLabel(lon);
+    $('ny-zone').textContent  = nyLabel(ny);
+    $('lon-time').textContent = `${pad(lon.h)}:${pad(lon.m)}:${pad(lon.s)}`;
+    $('ny-time').textContent  = `${pad(ny.h)}:${pad(ny.m)}:${pad(ny.s)}`;
+    $('lon-date').textContent = `${lon.weekday} ${lon.day} ${lon.month}`;
+    $('ny-date').textContent  = `${ny.weekday} ${ny.day} ${ny.month}`;
+
+    const off = offsetMin(lon, ny);
+
+    // banner
+    const s = sessionNow(ny);
+    const ph = PHASE[s.state];
+    $('phase').textContent = ph.label;
+    $('phase').style.color = ph.color;
+    $('count').innerHTML = `<small>${s.eventName} in</small> ${hms(s.remSec)}`;
+    $('banner').style.borderColor = ph.color;
+    const bar = $('bar');
+    bar.style.width = (s.frac*100).toFixed(1)+'%';
+    bar.style.background = ph.color;
+
+    // session table
+    $('sess-body').innerHTML = SESSIONS.map(row => {
+      const isNext = row.name === s.eventName || (s.eventName==='Week opens' && row.key==='OVERNIGHT');
+      const isActive = row.key === s.state;
+      let b;
+      if (isActive)      b = `<span class="badge b-live">NOW</span>`;
+      else if (isNext)   b = `<span class="badge b-next">NEXT</span>`;
+      else               b = `<span class="badge b-off">—</span>`;
+      return `<tr class="sess${isNext?' next':''}">
+        <td>${row.name}</td>
+        <td class="lon">${nyToLondon(row.ny, off)}</td>
+        <td class="ny">${pad(Math.floor(row.ny/60))}:${pad(row.ny%60)}</td>
+        <td>${b}</td>
+      </tr>`;
+    }).join('');
+
+    // conversion table (London hour -> NY)
+    let rows = '';
+    for (let H = 0; H < 24; H++){
+      let nyT = H*60 - off, dshift = 0;
+      while (nyT < 0){ nyT += 1440; dshift = -1; }
+      while (nyT >= 1440){ nyT -= 1440; dshift = 1; }
+      const nyH = Math.floor(nyT/60), nyM = nyT%60;
+      const inRTH = nyT >= RTH_OPEN && nyT < RTH_CLOSE;
+      const isNow = H === lon.h;
+      const ds = dshift === -1 ? '<span class="dshift">−1d</span>'
+               : dshift === 1  ? '<span class="dshift">+1d</span>' : '';
+      rows += `<tr class="${isNow?'now ':''}${inRTH?'rth':''}">
+        <td>${pad(H)}:00${isNow?'<span class="nowtag">◀ now</span>':''}</td>
+        <td class="arrow">→</td>
+        <td class="ny">${pad(nyH)}:${pad(nyM)}${ds}</td>
+      </tr>`;
+    }
+    $('conv-body').innerHTML = rows;
+  }
+
+  // zone labels show BST/GMT & EDT/EST automatically
+  function lonLabel(lon){
+    const name = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',timeZoneName:'short'})
+      .formatToParts(new Date()).find(p=>p.type==='timeZoneName');
+    return 'LONDON ' + (name ? name.value : '');
+  }
+  function nyLabel(ny){
+    const name = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',timeZoneName:'short'})
+      .formatToParts(new Date()).find(p=>p.type==='timeZoneName');
+    return 'NEW YORK ' + (name ? name.value : '');
+  }
+
+  render();
+  setInterval(render, 1000);
+})();
+</script>
+</body>
+</html>
