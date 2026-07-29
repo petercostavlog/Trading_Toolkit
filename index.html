@@ -33,10 +33,10 @@
     --accent-cyan-dim: rgba(34, 211, 238, 0.12);
     --accent-orange: #f59e0b;
     --accent-orange-dim: rgba(245, 158, 11, 0.12);
-    --radius: 14px;
-    --radius-sm: 10px;
-    --radius-lg: 20px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --radius: 12px;
+    --radius-sm: 9px;
+    --radius-lg: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -57,31 +57,41 @@
   /* ── HEADER ── */
   .header {
     position: relative; z-index: 1;
-    padding: 32px 48px 20px;
+    padding: 16px 28px 12px;
     display: flex; align-items: flex-end; justify-content: space-between;
     border-bottom: 1px solid var(--border);
   }
   .header-left h1 {
-    font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+    font-size: 21px; font-weight: 800; letter-spacing: -0.5px;
     color: var(--text-primary);
   }
   .header-left h1 span { opacity: 0.4; font-weight: 400; }
   .header-left p {
-    color: var(--text-secondary); font-size: 13px;
+    color: var(--text-secondary); font-size: 12px;
     font-family: 'JetBrains Mono', monospace; margin-top: 2px;
   }
-  .header-right { display: flex; gap: 10px; align-items: center; }
+  .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .clock {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px; color: var(--text-muted);
     background: var(--bg-card); border: 1px solid var(--border);
     padding: 6px 14px; border-radius: var(--radius-sm);
   }
+  /* size control */
+  .size-ctrl {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em;
+    color: var(--text-muted);
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 5px 12px; border-radius: var(--radius-sm);
+  }
+  .size-ctrl input[type=range] { width: 92px; accent-color: var(--accent-blue); cursor: pointer; }
+  .size-ctrl #densityPct { min-width: 34px; text-align: right; color: var(--text-secondary); }
 
   /* ── BREADCRUMB ── */
   .breadcrumb {
     position: relative; z-index: 1;
-    padding: 16px 48px;
+    padding: 10px 28px;
     display: flex; align-items: center; gap: 8px;
     font-family: 'JetBrains Mono', monospace; font-size: 12px;
   }
@@ -97,23 +107,23 @@
   /* ── MAIN CONTAINER ── */
   .main {
     position: relative; z-index: 1;
-    padding: 8px 48px 60px;
+    padding: 6px 28px 44px;
   }
 
   /* ── PROFILE SELECT SCREEN ── */
   .profiles-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    max-width: 800px;
-    margin: 60px auto;
+    gap: 14px;
+    max-width: 640px;
+    margin: 34px auto;
     animation: fadeUp 0.4s ease both;
   }
   .profile-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 48px 24px;
+    padding: 28px 20px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -131,16 +141,16 @@
   }
   .profile-card:hover::before { opacity: 1; }
   .profile-avatar {
-    width: 80px; height: 80px;
+    width: 60px; height: 60px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 36px; margin: 0 auto 16px;
+    font-size: 28px; margin: 0 auto 12px;
     border: 3px solid var(--border);
     transition: border-color 0.3s;
   }
   .profile-card:hover .profile-avatar { border-color: inherit; }
   .profile-name {
-    font-size: 22px; font-weight: 700; margin-bottom: 4px;
+    font-size: 18px; font-weight: 700; margin-bottom: 3px;
   }
   .profile-sub {
     font-family: 'JetBrains Mono', monospace;
@@ -172,17 +182,17 @@
   /* ── SUBCATEGORY CARDS ── */
   .subcats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 18px;
-    max-width: 900px;
-    margin: 40px auto;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+    max-width: 780px;
+    margin: 26px auto;
     animation: fadeUp 0.4s ease both;
   }
   .subcat-card {
     background: var(--bg-card);
     border: 2px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 36px 24px 28px;
+    padding: 22px 18px 18px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative; overflow: hidden;
@@ -205,22 +215,22 @@
   }
   .subcat-card:hover::after { opacity: 1; }
   .subcat-emoji-wrap {
-    width: 64px; height: 64px; border-radius: 16px;
+    width: 48px; height: 48px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 14px;
-    font-size: 30px;
+    margin: 0 auto 10px;
+    font-size: 24px;
     border: 2px solid var(--border);
     transition: all 0.3s;
   }
-  .subcat-name { font-size: 19px; font-weight: 700; transition: color 0.3s; }
+  .subcat-name { font-size: 16px; font-weight: 700; transition: color 0.3s; }
   .subcat-desc {
-    font-size: 12px; color: var(--text-muted); margin-top: 6px;
+    font-size: 11px; color: var(--text-muted); margin-top: 5px;
     font-family: 'JetBrains Mono', monospace;
   }
   .subcat-count {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; margin-top: 10px;
-    padding: 4px 12px; border-radius: 20px;
+    font-size: 10px; margin-top: 9px;
+    padding: 3px 10px; border-radius: 20px;
     display: inline-block;
   }
 
@@ -299,24 +309,24 @@
 
   /* ── TOOLBAR ── */
   .toolbar {
-    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-    margin-bottom: 20px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 16px;
     animation: fadeUp 0.3s ease both;
   }
   .search-box {
-    flex: 1; min-width: 200px; max-width: 400px;
+    flex: 1; min-width: 180px; max-width: 360px;
     background: var(--bg-input); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 10px 16px;
-    color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 14px;
+    border-radius: var(--radius-sm); padding: 8px 14px;
+    color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 13px;
     outline: none; transition: border-color 0.2s;
   }
   .search-box:focus { border-color: var(--accent-blue); }
   .search-box::placeholder { color: var(--text-muted); }
   .filter-btn {
     background: var(--bg-card); border: 1px solid var(--border);
-    color: var(--text-secondary); padding: 10px 18px;
+    color: var(--text-secondary); padding: 8px 15px;
     border-radius: var(--radius-sm); cursor: pointer;
-    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
     transition: all 0.2s;
   }
   .filter-btn:hover, .filter-btn.active {
@@ -325,38 +335,38 @@
   }
   .btn-action {
     background: var(--bg-card); border: 1px solid var(--border);
-    color: var(--text-secondary); padding: 10px 16px;
+    color: var(--text-secondary); padding: 8px 14px;
     border-radius: var(--radius-sm); cursor: pointer;
-    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
     transition: all 0.2s; margin-left: auto;
   }
   .btn-action:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
 
   /* ── CATEGORY SECTIONS ── */
-  .category { margin-top: 28px; animation: fadeUp 0.4s ease both; }
+  .category { margin-top: 20px; animation: fadeUp 0.4s ease both; }
   .category-header {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 11px;
   }
   .category-icon {
-    width: 36px; height: 36px; border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    width: 30px; height: 30px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
   }
-  .category-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .category-title { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
   .category-count {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);
     background: var(--bg-card); border: 1px solid var(--border);
     padding: 2px 8px; border-radius: 20px;
   }
   .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
   }
 
   /* ── TOOL CARD ── */
   .tool-card {
     background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
+    border-radius: var(--radius); padding: 13px 15px;
     cursor: pointer; transition: all 0.25s ease;
     position: relative; overflow: hidden;
     text-decoration: none; display: block;
@@ -375,28 +385,28 @@
     display: flex; justify-content: space-between; align-items: flex-start;
   }
   .card-top-right { display: flex; align-items: center; gap: 6px; }
-  .tool-card .tool-emoji { font-size: 28px; margin-bottom: 12px; }
+  .tool-card .tool-emoji { font-size: 22px; margin-bottom: 8px; }
   .btn-gear {
-    width: 28px; height: 28px; border-radius: 6px;
+    width: 26px; height: 26px; border-radius: 6px;
     background: transparent; border: 1px solid transparent;
     color: var(--text-muted); cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    font-size: 15px; transition: all 0.2s; opacity: 0;
+    font-size: 14px; transition: all 0.2s; opacity: 0;
   }
   .tool-card:hover .btn-gear { opacity: 1; }
   .btn-gear:hover { background: var(--bg-input); border-color: var(--border); color: var(--text-secondary); }
   .tool-card .tool-status {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 500;
+    font-size: 9px; padding: 3px 7px; border-radius: 20px; font-weight: 500;
   }
   .status-ready { background: var(--accent-green-dim); color: var(--accent-green); }
   .status-wip { background: var(--accent-gold-dim); color: var(--accent-gold); }
   .status-planned { background: var(--bg-input); color: var(--text-muted); }
-  .tool-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
-  .tool-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-  .tool-card .tool-tags { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tool-card h3 { font-size: 13.5px; font-weight: 600; margin-bottom: 5px; color: var(--text-primary); }
+  .tool-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.45; }
+  .tool-card .tool-tags { margin-top: 9px; display: flex; gap: 5px; flex-wrap: wrap; }
   .tool-tag {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 2px 7px;
     background: var(--bg-input); border: 1px solid var(--border);
     border-radius: 4px; color: var(--text-muted);
   }
@@ -450,16 +460,27 @@
   .cat-orange .tool-card:hover { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); }
   .cat-orange .tool-card::before { background: linear-gradient(90deg, var(--accent-orange), transparent); }
 
+  /* ── PER-TOOL COLOUR OVERRIDE ── */
+  .tool-card[data-tc] {
+    background: color-mix(in srgb, var(--tc) 7%, var(--bg-card)) !important;
+    border-color: color-mix(in srgb, var(--tc) 30%, var(--border)) !important;
+  }
+  .tool-card[data-tc]:hover {
+    background: color-mix(in srgb, var(--tc) 14%, var(--bg-card)) !important;
+    border-color: var(--tc) !important;
+  }
+  .tool-card[data-tc]::before { background: linear-gradient(90deg, var(--tc), transparent) !important; }
+
   /* ── ADD CARD ── */
   .add-card {
     border: 2px dashed var(--border); background: transparent;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    min-height: 160px; cursor: pointer; transition: all 0.25s;
+    min-height: 118px; cursor: pointer; transition: all 0.25s;
   }
   .add-card:hover { border-color: var(--accent-blue); background: var(--accent-blue-dim); }
-  .add-card .plus { font-size: 28px; color: var(--text-muted); margin-bottom: 6px; }
-  .add-card span { font-size: 13px; color: var(--text-muted); }
+  .add-card .plus { font-size: 24px; color: var(--text-muted); margin-bottom: 4px; }
+  .add-card span { font-size: 12px; color: var(--text-muted); }
 
   /* ── MODAL ── */
   .modal-overlay {
@@ -470,23 +491,24 @@
   .modal-overlay.open { display: flex; }
   .modal {
     background: var(--bg-secondary); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 32px;
+    border-radius: var(--radius); padding: 28px;
     width: 90%; max-width: 520px; animation: fadeUp 0.3s ease;
+    max-height: 90vh; overflow-y: auto;
   }
-  .modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .modal h2 { font-size: 19px; font-weight: 700; margin-bottom: 18px; }
   .modal label {
-    display: block; font-size: 13px; font-weight: 500;
-    color: var(--text-secondary); margin-bottom: 6px; margin-top: 14px;
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--text-secondary); margin-bottom: 5px; margin-top: 12px;
   }
   .modal input, .modal select, .modal textarea {
     width: 100%; background: var(--bg-input); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 10px 14px;
+    border-radius: var(--radius-sm); padding: 9px 13px;
     color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 14px;
     outline: none; transition: border-color 0.2s;
   }
   .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent-blue); }
-  .modal textarea { resize: vertical; min-height: 70px; }
-  .modal-actions { margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; }
+  .modal textarea { resize: vertical; min-height: 64px; }
+  .modal-actions { margin-top: 22px; display: flex; gap: 12px; justify-content: flex-end; }
   .btn-cancel {
     background: transparent; border: 1px solid var(--border);
     color: var(--text-secondary); padding: 10px 20px;
@@ -515,10 +537,10 @@
     to { opacity: 1; transform: translateY(0); }
   }
   @media (max-width: 768px) {
-    .header, .breadcrumb, .main { padding-left: 20px; padding-right: 20px; }
+    .header, .breadcrumb, .main { padding-left: 16px; padding-right: 16px; }
     .header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .profiles-grid { grid-template-columns: 1fr; }
-    .tools-grid { grid-template-columns: 1fr; }
+    .profiles-grid { grid-template-columns: repeat(3, 1fr); }
+    .tools-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   }
 </style>
 </head>
@@ -530,6 +552,11 @@
     <p>Family Toolkit</p>
   </div>
   <div class="header-right">
+    <div class="size-ctrl">
+      <span>SIZE</span>
+      <input type="range" id="densityRange" min="70" max="120" step="5" value="100" aria-label="tile size">
+      <span id="densityPct">100%</span>
+    </div>
     <div class="clock" id="clock"></div>
   </div>
 </header>
@@ -552,6 +579,18 @@
       <option value="ready">Ready</option>
       <option value="wip">Work in Progress</option>
       <option value="planned">Planned</option>
+    </select>
+    <label>Accent Colour</label>
+    <select id="fColor">
+      <option value="">Category default</option>
+      <option value="blue">Blue</option>
+      <option value="gold">Gold</option>
+      <option value="green">Green</option>
+      <option value="red">Red</option>
+      <option value="purple">Purple</option>
+      <option value="cyan">Cyan</option>
+      <option value="pink">Pink</option>
+      <option value="orange">Orange</option>
     </select>
     <label>File / URL (optional)</label>
     <input type="text" id="fLink" placeholder="e.g. position-size-calculator.html">
@@ -678,7 +717,7 @@ function loadData() {
     return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
   } catch { return JSON.parse(JSON.stringify(DEFAULT_DATA)); }
 }
-function saveData() { localStorage.setItem('familyToolkit_v3', JSON.stringify(DATA)); }
+function saveData() { try { localStorage.setItem('familyToolkit_v3', JSON.stringify(DATA)); } catch(e){} }
 
 let DATA = loadData();
 let nav = { profile: null, subcat: null };
@@ -782,8 +821,9 @@ function renderTools(main) {
       const isLink = tool.link && (tool.link.startsWith('http') || tool.link.endsWith('.html'));
       const tag = isLink ? 'a' : 'div';
       const href = isLink ? ` href="${tool.link}" target="_blank"` : '';
+      const tc = tool.color ? ` data-tc style="--tc: var(--accent-${tool.color})"` : '';
 
-      html += `<${tag} class="tool-card"${href}>
+      html += `<${tag} class="tool-card"${href}${tc}>
         <div class="card-top">
           <div class="tool-emoji">${tool.emoji}</div>
           <div class="card-top-right">
@@ -816,6 +856,7 @@ function openAddTool(catId) {
   document.getElementById('fName').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fStatus').value = 'planned';
+  document.getElementById('fColor').value = '';
   document.getElementById('fLink').value = '';
   document.getElementById('fTags').value = '';
   document.getElementById('fEmoji').value = '🔧';
@@ -833,6 +874,7 @@ function editTool(id) {
   document.getElementById('fName').value = tool.name;
   document.getElementById('fDesc').value = tool.desc;
   document.getElementById('fStatus').value = tool.status;
+  document.getElementById('fColor').value = tool.color || '';
   document.getElementById('fLink').value = tool.link || '';
   document.getElementById('fTags').value = tool.tags.join(', ');
   document.getElementById('fEmoji').value = tool.emoji;
@@ -851,6 +893,7 @@ function saveTool() {
     name,
     desc: document.getElementById('fDesc').value.trim(),
     status: document.getElementById('fStatus').value,
+    color: document.getElementById('fColor').value,
     link: document.getElementById('fLink').value.trim(),
     tags: document.getElementById('fTags').value.split(',').map(t => t.trim()).filter(Boolean),
     emoji: document.getElementById('fEmoji').value || '🔧',
@@ -884,6 +927,21 @@ function updateCategorySelect() {
   sel.innerHTML = subcat.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
 }
 
+// ── SIZE CONTROL (persisted) ──
+const mainEl = document.getElementById('mainContent');
+const densityRange = document.getElementById('densityRange');
+const densityPct = document.getElementById('densityPct');
+function applyDensity(v) {
+  v = Math.min(120, Math.max(70, v));
+  mainEl.style.zoom = v / 100;
+  densityRange.value = v;
+  densityPct.textContent = v + '%';
+  try { localStorage.setItem('familyToolkit_scale', v); } catch(e){}
+}
+let savedScale = 100;
+try { const s = parseInt(localStorage.getItem('familyToolkit_scale'), 10); if (s >= 70 && s <= 120) savedScale = s; } catch(e){}
+densityRange.addEventListener('input', e => applyDensity(+e.target.value));
+
 // ── CLOCK ──
 function updateClock() {
   const now = new Date();
@@ -895,6 +953,7 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ── INIT ──
+applyDensity(savedScale);
 render();
 </script>
 </body>
