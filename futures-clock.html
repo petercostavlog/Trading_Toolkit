@@ -22,51 +22,68 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--mono)}
-  body{padding:26px 16px 60px;line-height:1.4;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1080px;margin:0 auto}
+  body{padding:16px 12px 32px;line-height:1.35;-webkit-font-smoothing:antialiased;font-size:13px}
+  .wrap{max-width:900px;margin:0 auto}
+  #stage{max-width:600px;margin:0 auto;transform-origin:top center}
+
+  /* size control */
+  .controls{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:8px;
+            font-size:10px;color:var(--dim);letter-spacing:.14em;user-select:none}
+  .controls input[type=range]{width:120px;accent-color:var(--london);cursor:pointer}
+  .controls button{background:var(--panel);border:1px solid var(--line);color:var(--text);
+                   border-radius:6px;padding:2px 9px;font-family:var(--mono);cursor:pointer;font-size:12px;line-height:1}
+  .controls button:hover{border-color:var(--london);color:var(--london)}
+  .controls .pct{min-width:38px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
 
   /* header */
-  header{text-align:center;margin-bottom:26px}
-  h1{margin:0;font-size:clamp(22px,4.4vw,40px);letter-spacing:.28em;color:var(--title);
-     text-shadow:0 0 18px rgba(46,224,140,.35)}
-  .sub{margin-top:8px;font-size:12px;letter-spacing:.34em;color:var(--dim)}
+  header{text-align:center;margin-bottom:16px}
+  h1{margin:0;font-size:clamp(16px,3vw,22px);letter-spacing:.22em;color:var(--title);
+     text-shadow:0 0 12px rgba(46,224,140,.3)}
+  .sub{margin-top:6px;font-size:10px;letter-spacing:.28em;color:var(--dim)}
   .sub b{color:var(--london)}
   .sub i{color:var(--ny);font-style:normal}
 
   /* clocks */
-  .clocks{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-  .clock{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-         padding:20px 16px;text-align:center;position:relative;overflow:hidden}
-  .clock::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
-  .clock.london::before{background:var(--london);box-shadow:0 0 16px var(--london)}
-  .clock.ny::before{background:var(--ny);box-shadow:0 0 16px var(--ny)}
-  .clock .zone{font-size:12px;letter-spacing:.24em;color:var(--dim)}
+  .clocks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .clock{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+         padding:11px 10px;text-align:center;position:relative;overflow:hidden}
+  .clock::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+  .clock.london::before{background:var(--london);box-shadow:0 0 10px var(--london)}
+  .clock.ny::before{background:var(--ny);box-shadow:0 0 10px var(--ny)}
+  .clock .zone{font-size:9px;letter-spacing:.18em;color:var(--dim)}
   .clock.london .zone{color:var(--london)}
   .clock.ny .zone{color:var(--ny)}
-  .clock .time{font-size:clamp(30px,7vw,52px);font-weight:700;font-variant-numeric:tabular-nums;
-               letter-spacing:.04em;margin:6px 0 4px}
-  .clock .date{font-size:13px;color:var(--dim)}
+  .clock .time{font-size:clamp(20px,5vw,28px);font-weight:700;font-variant-numeric:tabular-nums;
+               letter-spacing:.03em;margin:3px 0 2px}
+  .clock .date{font-size:10px;color:var(--dim)}
+  .zsel{background:transparent;border:0;color:inherit;font-family:var(--mono);font-weight:600;
+        font-size:10px;letter-spacing:.14em;text-align:center;text-align-last:center;cursor:pointer;
+        padding:3px 6px;border-radius:6px;appearance:none;-webkit-appearance:none;max-width:100%}
+  .zsel:hover,.zsel:focus{background:#0a1017;outline:none}
+  .clock.london .zsel{color:var(--london)}
+  .clock.ny .zsel{color:var(--ny)}
+  .zsel option{background:#0e141c;color:var(--text);letter-spacing:normal;font-weight:400}
 
   /* status banner */
-  .banner{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:22px;
+  .banner{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:12px;
           background:var(--panel);transition:border-color .3s}
-  .banner .row1{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  .banner .phase{font-size:clamp(15px,2.6vw,19px);font-weight:700;letter-spacing:.05em}
-  .banner .count{font-size:clamp(14px,2.4vw,18px);font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
+  .banner .row1{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .banner .phase{font-size:13px;font-weight:700;letter-spacing:.04em}
+  .banner .count{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
   .banner .count small{color:var(--dim);font-weight:400}
-  .bar{height:5px;border-radius:4px;background:#0a1017;margin-top:12px;overflow:hidden}
+  .bar{height:4px;border-radius:3px;background:#0a1017;margin-top:8px;overflow:hidden}
   .bar>span{display:block;height:100%;width:0;transition:width .9s linear}
 
   /* layout */
-  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}
+  .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:10px;align-items:start}
 
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .card h2{margin:0;padding:14px 16px;font-size:12px;letter-spacing:.24em;color:var(--dim);
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .card h2{margin:0;padding:9px 12px;font-size:10px;letter-spacing:.18em;color:var(--dim);
            border-bottom:1px solid var(--line);font-weight:600}
 
   table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-  th,td{padding:11px 12px;text-align:left;font-size:14px}
-  thead th{font-size:11px;letter-spacing:.12em;color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
+  th,td{padding:6px 10px;text-align:left;font-size:12px}
+  thead th{font-size:10px;letter-spacing:.1em;color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
   th.lon,td.lon{color:var(--london)}
   th.ny,td.ny{color:var(--ny)}
   tbody tr{border-bottom:1px solid #131e2b}
@@ -75,14 +92,14 @@
   tr.next{background:rgba(245,184,61,.08)}
   tr.next td:first-child{color:var(--amber)}
 
-  .badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;letter-spacing:.1em;font-weight:700}
+  .badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:9px;letter-spacing:.08em;font-weight:700}
   .b-live{color:#03110b;background:var(--green)}
   .b-next{color:var(--amber);border:1px solid rgba(245,184,61,.5);background:rgba(245,184,61,.08)}
   .b-off{color:var(--dim);border:1px solid var(--line)}
 
   /* conversion table */
   .conv{max-height:none}
-  .conv td{padding:8px 12px;font-size:13px}
+  .conv td{padding:4px 10px;font-size:11px}
   .conv .arrow{color:var(--dim);padding:0 4px}
   .conv tr.now{background:rgba(56,189,248,.14);outline:1px solid rgba(56,189,248,.35)}
   .conv tr.now td:first-child{color:#fff;font-weight:700}
@@ -92,11 +109,11 @@
   .conv .dshift{color:var(--dim);font-size:11px;margin-left:4px}
   .nowtag{color:var(--london);font-size:11px;letter-spacing:.1em;margin-left:6px}
 
-  .legend{display:flex;gap:18px;flex-wrap:wrap;padding:12px 16px;font-size:12px;color:var(--dim);border-top:1px solid var(--line)}
-  .legend span{display:inline-flex;align-items:center;gap:6px}
-  .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;padding:8px 12px;font-size:10px;color:var(--dim);border-top:1px solid var(--line)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:7px;height:7px;border-radius:2px;display:inline-block}
 
-  footer{text-align:center;color:var(--dim);font-size:12px;margin-top:26px;line-height:1.7}
+  footer{text-align:center;color:var(--dim);font-size:10px;margin-top:16px;line-height:1.6}
   footer b{color:var(--ny)}
 
   @media (max-width:760px){
@@ -111,19 +128,28 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="controls">
+    <span>SIZE</span>
+    <button id="dec" aria-label="smaller" type="button">−</button>
+    <input id="scale" type="range" min="50" max="150" step="5" value="100" aria-label="UI size" />
+    <button id="inc" aria-label="larger" type="button">+</button>
+    <span class="pct" id="pct">100%</span>
+    <button id="reset" type="button">reset</button>
+  </div>
+  <div id="stage">
   <header>
     <h1>ES&nbsp;FUTURES&nbsp;CLOCK</h1>
-    <div class="sub">CME&nbsp;·&nbsp;<b>LONDON</b>&nbsp;·&nbsp;<i>NEW&nbsp;YORK</i></div>
+    <div class="sub" id="sub">CME&nbsp;·&nbsp;ES&nbsp;FUTURES</div>
   </header>
 
   <section class="clocks">
     <div class="clock london">
-      <div class="zone" id="lon-zone">LONDON</div>
+      <select class="zsel" id="selL" aria-label="left timezone"></select>
       <div class="time" id="lon-time">--:--:--</div>
       <div class="date" id="lon-date">—</div>
     </div>
     <div class="clock ny">
-      <div class="zone" id="ny-zone">NEW YORK</div>
+      <select class="zsel" id="selR" aria-label="right timezone"></select>
       <div class="time" id="ny-time">--:--:--</div>
       <div class="date" id="ny-date">—</div>
     </div>
@@ -145,8 +171,8 @@
         <thead>
           <tr>
             <th>Session</th>
-            <th class="lon">London</th>
-            <th class="ny">New York</th>
+            <th class="lon" id="hdrL">London</th>
+            <th class="ny" id="hdrR">New York</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -161,13 +187,13 @@
 
     <!-- CONVERSION TABLE -->
     <div class="card">
-      <h2>LONDON → NEW YORK · 24H</h2>
+      <h2 id="convTitle">LONDON → NEW YORK · 24H</h2>
       <table class="conv">
         <thead>
           <tr>
-            <th class="lon">London</th>
+            <th class="lon" id="convL">London</th>
             <th></th>
-            <th class="ny">New York</th>
+            <th class="ny" id="convR">New York</th>
           </tr>
         </thead>
         <tbody id="conv-body"><!-- js --></tbody>
@@ -179,18 +205,67 @@
     </div>
   </div>
 
-  <footer>
-    ES (Globex) se închide zilnic <b>17:00 NY</b> — redeschide <b>18:00 NY</b> · pauză de 1h ·
-    weekend închis vineri 17:00 → duminică 18:00 NY<br>
+  <footer id="foot">
     Fusuri reale (DST automat). Nu e sfat de investiții.
   </footer>
+  </div><!-- /#stage -->
 </div>
 
 <script>
 (() => {
   "use strict";
 
+  /* ---- size control (persisted) ---- */
+  const stage = document.getElementById('stage');
+  const range = document.getElementById('scale');
+  const pctEl = document.getElementById('pct');
+  const KEY = 'es-clock-scale';
+  let pct = 100;
+  try { const v = parseInt(localStorage.getItem(KEY),10); if (v>=50 && v<=150) pct = v; } catch(e){}
+
+  function applyScale(v){
+    pct = Math.min(150, Math.max(50, v));
+    stage.style.zoom = pct/100;                 // clean reflow-based scaling
+    stage.style.transform = ('zoom' in stage.style) ? '' : `scale(${pct/100})`; // fallback
+    range.value = pct;
+    pctEl.textContent = pct + '%';
+    try { localStorage.setItem(KEY, pct); } catch(e){}
+  }
+  range.addEventListener('input', e => applyScale(+e.target.value));
+  document.getElementById('inc').addEventListener('click', () => applyScale(pct+5));
+  document.getElementById('dec').addEventListener('click', () => applyScale(pct-5));
+  document.getElementById('reset').addEventListener('click', () => applyScale(100));
+  applyScale(pct);
+
+  /* ---- timezone selection (persisted) ---- */
+  const ZONES = [
+    ['Europe/London','London'],
+    ['Europe/Bucharest','Bucharest'],
+    ['America/New_York','New York'],
+    ['America/Chicago','Chicago'],
+    ['America/Los_Angeles','Los Angeles'],
+    ['Europe/Berlin','Frankfurt'],
+    ['Asia/Dubai','Dubai'],
+    ['Asia/Tokyo','Tokyo'],
+    ['Australia/Sydney','Sydney']
+  ];
+  const nameOf = tz => (ZONES.find(z => z[0] === tz) || [tz, tz])[1];
+  const selL = document.getElementById('selL');
+  const selR = document.getElementById('selR');
+  for (const [tz, label] of ZONES){ selL.add(new Option(label, tz)); selR.add(new Option(label, tz)); }
+  let leftTz = 'Europe/London', rightTz = 'America/New_York';
+  try {
+    const a = localStorage.getItem('es-clock-left');  if (a) leftTz = a;
+    const b = localStorage.getItem('es-clock-right'); if (b) rightTz = b;
+  } catch(e){}
+  selL.value = leftTz; if (!selL.value) { selL.value = leftTz = 'Europe/London'; }
+  selR.value = rightTz; if (!selR.value) { selR.value = rightTz = 'America/New_York'; }
+  selL.addEventListener('change', () => { leftTz = selL.value;  try{localStorage.setItem('es-clock-left', leftTz);}catch(e){}  render(); });
+  selR.addEventListener('change', () => { rightTz = selR.value; try{localStorage.setItem('es-clock-right', rightTz);}catch(e){} render(); });
+
   const WD = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+
+
 
   // --- read wall-clock parts for a timezone ---
   function zoned(tz){
@@ -270,49 +345,51 @@
     if (m > 0) return `${m}m ${pad(s)}s`;
     return `${s}s`;
   }
-  // London↔NY offset in minutes (London ahead of NY, normally +300)
-  function offsetMin(lon, ny){
-    const raw = (lon.h*60+lon.m) - (ny.h*60+ny.m);
-    return ((raw % 1440) + 1440) % 1440;   // ~300
+  // offset (minutes) of a zone relative to ET reference; unsigned 0..1439
+  function offFromET(z, et){
+    const raw = (z.h*60 + z.m) - (et.h*60 + et.m);
+    return ((raw % 1440) + 1440) % 1440;
   }
-  // add offset to a NY minute-of-day -> London string
-  function nyToLondon(nyMin, off){
-    let t = (nyMin + off) % 1440; if (t < 0) t += 1440;
-    return `${pad(Math.floor(t/60))}:${pad(t%60)}`;
+  // ET minute -> chosen-zone minute
+  function toZone(etMin, off){ return (((etMin + off) % 1440) + 1440) % 1440; }
+  const fmtMin = t => `${pad(Math.floor(t/60))}:${pad(t%60)}`;
+  function tzAbbr(tz){
+    const p = new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'short'})
+      .formatToParts(new Date()).find(x => x.type === 'timeZoneName');
+    return p ? p.value : '';
   }
 
-  // --- session table rows (fixed NY times) ---
+  // --- session rows (canonical ET times) ---
   const SESSIONS = [
-    { key:'OVERNIGHT',  name:'Globex reopen', ny:GLOBEX    },
-    { key:'RTH',        name:'Pit opens',     ny:RTH_OPEN  },
-    { key:'AFTERHOURS', name:'Pit closes',    ny:RTH_CLOSE },
-    { key:'BREAK',      name:'ETH closes',    ny:ETH_CLOSE }
+    { key:'OVERNIGHT',  name:'Globex reopen', et:GLOBEX    },
+    { key:'RTH',        name:'Pit opens',     et:RTH_OPEN  },
+    { key:'AFTERHOURS', name:'Pit closes',    et:RTH_CLOSE },
+    { key:'BREAK',      name:'ETH closes',    et:ETH_CLOSE }
   ];
-
-  function badge(state){
-    if (state === 'RTH')  return '<span class="badge b-live">LIVE</span>';
-    if (state === 'BREAK' || state === 'WEEKEND') return '<span class="badge b-off">CLOSED</span>';
-    return '<span class="badge b-off">—</span>';
-  }
 
   const $ = id => document.getElementById(id);
 
   function render(){
-    const lon = zoned('Europe/London');
-    const ny  = zoned('America/New_York');
+    const et = zoned('America/New_York');   // canonical reference for sessions
+    const L  = zoned(leftTz);
+    const R  = zoned(rightTz);
+    const leftName = nameOf(leftTz), rightName = nameOf(rightTz);
+    const leftOff  = offFromET(L, et), rightOff = offFromET(R, et);
 
     // clocks
-    $('lon-zone').textContent = lonLabel(lon);
-    $('ny-zone').textContent  = nyLabel(ny);
-    $('lon-time').textContent = `${pad(lon.h)}:${pad(lon.m)}:${pad(lon.s)}`;
-    $('ny-time').textContent  = `${pad(ny.h)}:${pad(ny.m)}:${pad(ny.s)}`;
-    $('lon-date').textContent = `${lon.weekday} ${lon.day} ${lon.month}`;
-    $('ny-date').textContent  = `${ny.weekday} ${ny.day} ${ny.month}`;
+    $('lon-time').textContent = `${pad(L.h)}:${pad(L.m)}:${pad(L.s)}`;
+    $('ny-time').textContent  = `${pad(R.h)}:${pad(R.m)}:${pad(R.s)}`;
+    $('lon-date').textContent = `${L.weekday} ${L.day} ${L.month} · ${tzAbbr(leftTz)}`;
+    $('ny-date').textContent  = `${R.weekday} ${R.day} ${R.month} · ${tzAbbr(rightTz)}`;
 
-    const off = offsetMin(lon, ny);
+    // labels
+    $('sub').textContent = `${leftName}  ·  ${rightName}`;
+    $('hdrL').textContent = leftName;  $('hdrR').textContent = rightName;
+    $('convL').textContent = leftName; $('convR').textContent = rightName;
+    $('convTitle').textContent = `${leftName.toUpperCase()} → ${rightName.toUpperCase()} · 24H`;
 
-    // banner
-    const s = sessionNow(ny);
+    // banner (timezone-independent)
+    const s = sessionNow(et);
     const ph = PHASE[s.state];
     $('phase').textContent = ph.label;
     $('phase').style.color = ph.color;
@@ -332,42 +409,37 @@
       else               b = `<span class="badge b-off">—</span>`;
       return `<tr class="sess${isNext?' next':''}">
         <td>${row.name}</td>
-        <td class="lon">${nyToLondon(row.ny, off)}</td>
-        <td class="ny">${pad(Math.floor(row.ny/60))}:${pad(row.ny%60)}</td>
+        <td class="lon">${fmtMin(toZone(row.et, leftOff))}</td>
+        <td class="ny">${fmtMin(toZone(row.et, rightOff))}</td>
         <td>${b}</td>
       </tr>`;
     }).join('');
 
-    // conversion table (London hour -> NY)
+    // conversion table (left zone hour -> right zone)
     let rows = '';
     for (let H = 0; H < 24; H++){
-      let nyT = H*60 - off, dshift = 0;
-      while (nyT < 0){ nyT += 1440; dshift = -1; }
-      while (nyT >= 1440){ nyT -= 1440; dshift = 1; }
-      const nyH = Math.floor(nyT/60), nyM = nyT%60;
-      const inRTH = nyT >= RTH_OPEN && nyT < RTH_CLOSE;
-      const isNow = H === lon.h;
+      let t = H*60 + rightOff - leftOff, dshift = 0;
+      while (t < 0){ t += 1440; dshift = -1; }
+      while (t >= 1440){ t -= 1440; dshift = 1; }
+      const etMin = (((H*60 - leftOff) % 1440) + 1440) % 1440;   // this row's ET time
+      const inRTH = etMin >= RTH_OPEN && etMin < RTH_CLOSE;
+      const isNow = H === L.h;
       const ds = dshift === -1 ? '<span class="dshift">−1d</span>'
                : dshift === 1  ? '<span class="dshift">+1d</span>' : '';
       rows += `<tr class="${isNow?'now ':''}${inRTH?'rth':''}">
         <td>${pad(H)}:00${isNow?'<span class="nowtag">◀ now</span>':''}</td>
         <td class="arrow">→</td>
-        <td class="ny">${pad(nyH)}:${pad(nyM)}${ds}</td>
+        <td class="ny">${fmtMin(t)}${ds}</td>
       </tr>`;
     }
     $('conv-body').innerHTML = rows;
-  }
 
-  // zone labels show BST/GMT & EDT/EST automatically
-  function lonLabel(lon){
-    const name = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',timeZoneName:'short'})
-      .formatToParts(new Date()).find(p=>p.type==='timeZoneName');
-    return 'LONDON ' + (name ? name.value : '');
-  }
-  function nyLabel(ny){
-    const name = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',timeZoneName:'short'})
-      .formatToParts(new Date()).find(p=>p.type==='timeZoneName');
-    return 'NEW YORK ' + (name ? name.value : '');
+    // footer in the chosen market (right) zone
+    const rAbbr = tzAbbr(rightTz);
+    $('foot').innerHTML =
+      `ES (Globex) se închide zilnic <b>${fmtMin(toZone(ETH_CLOSE, rightOff))} ${rAbbr}</b> — ` +
+      `redeschide <b>${fmtMin(toZone(GLOBEX, rightOff))} ${rAbbr}</b> · pauză 1h · ` +
+      `weekend închis vineri → duminică<br>Fusuri reale (DST automat). Nu e sfat de investiții.`;
   }
 
   render();
